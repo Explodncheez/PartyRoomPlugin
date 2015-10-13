@@ -1,0 +1,25 @@
+name: PartyRoom
+main: partyroom.PartyRoom
+author: Explodncheez
+description: Runescape-inspired Party Room system.
+version: 0.1
+softdepend: [WorldGuard, WorldEdit, Vault]
+
+commands:
+  proom:
+    description: Base command for PartyRoom
+    
+permissions:
+  partyroom:
+    create:
+      default: op
+    commands:
+      default: op
+    withdraw:
+      default: op
+    help:
+      default: true
+    pull:
+      default: true
+    deposit:
+      default: true

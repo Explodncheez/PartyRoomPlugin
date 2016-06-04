@@ -1,9 +1,12 @@
 package partyroom;
 
+import java.lang.reflect.Method;
+
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,6 +21,7 @@ public class PartyRoom extends JavaPlugin {
 	private static Economy economy;
 	private static Plugin plugin;
 	private static FileConfiguration config;
+	private static boolean spigot;
 	
 	public static final String PREFIX = ChatColor.GOLD + "" + ChatColor.BOLD + "PartyRoom > " + ChatColor.RESET;
 	
@@ -32,6 +36,13 @@ public class PartyRoom extends JavaPlugin {
 		
 		LoaderAndSaver.loadChests(config);
 		getServer().getPluginManager().registerEvents(new PartyListener(), this);
+		
+		try {
+			Method m = ItemMeta.class.getDeclaredMethod("spigot");
+			spigot = m != null;
+		} catch (Exception e) {
+			spigot = false;
+		}
 	}
 	
 	@Override
@@ -45,7 +56,11 @@ public class PartyRoom extends JavaPlugin {
 	}
 	
 	public static FileConfiguration getConfiguration() {
-		return config;
+		return config == null ? config = plugin.getConfig() : config;
+	}
+	
+	public static boolean isSpigot() {
+		return spigot;
 	}
 	
 	public static WorldGuardPlugin getWG() {

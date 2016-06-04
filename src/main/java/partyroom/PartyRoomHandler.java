@@ -10,6 +10,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 
+import partyroom.gui.ChestEditor;
+
 public class PartyRoomHandler {
 	
 	private static Map<String, PartyChest> PartyChests = new HashMap<String, PartyChest>();
@@ -21,6 +23,7 @@ public class PartyRoomHandler {
 	
 	public static void removePartyChest(PartyChest chest) {
 		PartyChests.remove(chest.getChestString());
+		ChestEditor.removeEditor(chest.getChestString());
 	}
 	
 	public static PartyChest getPartyChest(String s) {

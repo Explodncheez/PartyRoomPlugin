@@ -1,14 +1,19 @@
 package partyroom;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class Utilities {
 	
@@ -43,5 +48,26 @@ public class Utilities {
 		String[] ss = s.split(",");
 		return new Location(PartyRoom.getPlugin().getServer().getWorld(ss[0]), Integer.parseInt(ss[1]), Integer.parseInt(ss[2]), Integer.parseInt(ss[3]));
 	}
+
+    public static ItemStack ConstructItemStack(Material mat, int amount, int durability, String displayName, String... lore) {
+    	ItemStack i = new ItemStack(mat, amount, (short) durability);
+    	ItemMeta meta = i.getItemMeta();
+    	List<String> loreList = new ArrayList<String>();
+    	for (String s : lore)
+    		loreList.add(s.replace("&", "§"));
+    	meta.setDisplayName(displayName.replace("&", "§"));
+    	meta.setLore(loreList);
+    	i.setItemMeta(meta);
+    	
+    	return i;
+    }
+    
+    public static void setLore(ItemStack item, int line, String changeTo) {
+    	ItemMeta meta = item.getItemMeta();
+    	List<String> lore = meta.getLore();
+    	lore.set(line, changeTo);
+    	meta.setLore(lore);
+    	item.setItemMeta(meta);
+    }
 
 }

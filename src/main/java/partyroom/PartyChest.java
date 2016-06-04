@@ -30,9 +30,9 @@ public class PartyChest {
 	private Material blockType;
 	private byte blockData = 0;
 	
-	private Boolean pulled;
+	private boolean pulled, enabled;
 	
-	public PartyChest(String chest, int ballooncount, Material blockType, byte blockData, double cashCostToPull, RegionTarget target, int radius, String region) {
+	public PartyChest(String chest, int ballooncount, Material blockType, byte blockData, double cashCostToPull, RegionTarget target, int radius, String region, boolean enabled) {
 		
 		this.chestLocation = chest;
 		this.cash = cashCostToPull;
@@ -40,6 +40,7 @@ public class PartyChest {
 		this.radius = radius;
 		this.count = ballooncount;
 		this.pulled = false;
+		this.enabled = enabled;
 		Block block = Utilities.StringToLoc(chestLocation).getBlock();
 		
 		if (blockType.isBlock()) {
@@ -62,25 +63,58 @@ public class PartyChest {
 		
 		PartyRoomHandler.addPartyChest(this);
 	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	public void setEnabled(boolean e) {
+		enabled = e;
+	}
 
 	public double getCost() {
 		return cash;
+	}
+	
+	public void setCost(double c) {
+		cash = c;
 	}
 	
 	public int getRadius() {
 		return radius;
 	}
 	
+	public void setRadius(int r) {
+		radius = r;
+	}
+	
 	public int getCount() {
 		return count;
+	}
+	
+	public void setCount(int c) {
+		count = c;
 	}
 	
 	public String getRegion() {
 		return region == null ? "" : region.getId();
 	}
 	
+	public ProtectedCuboidRegion setRegion(String s) {
+		return region = (ProtectedCuboidRegion) PartyRoom.getWG().getRegionManager(Utilities.StringToLoc(chestLocation).getWorld()).getRegion(s);
+	}
+	
 	public String getMaterial() {
 		return blockType.toString() + ":" + blockData;
+	}
+	
+	public void setMaterial(Material m, int data) {
+		blockType = m;
+		blockData = (byte) data;
+	}
+	
+	public Material getBlockMaterial() {
+		return blockType;
 	}
 	
 	public String getChestString() {
@@ -91,8 +125,8 @@ public class PartyChest {
 		return (Chest) Utilities.StringToLoc(chestLocation).getBlock().getState();
 	}
 	
-	public String getRegionTarget() {
-		return target.toString();
+	public RegionTarget getRegionTarget() {
+		return target;
 	}
 	
 	public boolean isPulled() {
@@ -113,6 +147,11 @@ public class PartyChest {
 	}
 	
 	public boolean attemptPull(Player puller) {
+		if (!enabled) {
+			puller.sendMessage(PartyRoom.PREFIX + "This Party Chest is not enabled!");
+			return false;
+		}
+		
 		if (pulled) {
 			puller.sendMessage(PartyRoom.PREFIX + "There's already a Drop Party going on!");
 			return false;
@@ -154,20 +193,18 @@ public class PartyChest {
 			int cycle = 0;
 			@SuppressWarnings("deprecation")
 			public void run() {
-				if (cycle > amount) {
+				if (++cycle > amount) {
 					this.cancel();
 					pulled = false;
 					return;
 				}
 				Location rloc = p.randomLocationConstrainY(8).add(0, 2, 0);
-				rloc.getWorld().playSound(rloc, Sound.CHICKEN_EGG_POP, 0.4F, 1.2F);
+				rloc.getWorld().playSound(rloc, Sound.ENTITY_CHICKEN_EGG, 0.4F, 1.2F);
 				
 				if (rloc.getBlock().getType() == Material.AIR) {
 					FallingBlock fe = chest.getWorld().spawnFallingBlock(rloc, blockType, blockData);
 					fe.setMetadata("partyroom", new FixedMetadataValue(PartyRoom.getPlugin(), chestLocation));
 				}
-				
-				cycle ++;
 			}
 		}.runTaskTimer(PartyRoom.getPlugin(), 20L, 20L);
 	}

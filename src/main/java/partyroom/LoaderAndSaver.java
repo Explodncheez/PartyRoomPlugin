@@ -17,6 +17,7 @@ public class LoaderAndSaver {
 			ConfigurationSection c = config.getConfigurationSection("party-chests." + path);
 			Location loc = null;
 			int count, radius;
+			boolean enabled;
 			Material mat;
 			byte data;
 			String region = "";
@@ -33,6 +34,13 @@ public class LoaderAndSaver {
 			if (loc == null || !(loc.getBlock().getState() instanceof Chest)) {
 				Utilities.throwConsoleError(path + " is an invalid entry as the block it points to is no longer a Single-Chest!");
 				return;
+			}
+			
+			try {
+				enabled = c.getBoolean("enabled");
+			} catch (Exception e) {
+				Utilities.throwConsoleError("Expected TRUE/FALSE in config at: §eparty-chests." + path + "enabled§f. Using FALSE.");
+				enabled = false;
 			}
 			
 			try {
@@ -83,7 +91,7 @@ public class LoaderAndSaver {
 				}
 			}
 			
-			new PartyChest(path, count, mat, data, cost, target, radius, region);
+			new PartyChest(path, count, mat, data, cost, target, radius, region, enabled);
 		}
 	}
 	
@@ -97,12 +105,13 @@ public class LoaderAndSaver {
 	}
 	
 	private static void saveToFile(FileConfiguration c, PartyChest p) {
-		String path = "party-chests." + Utilities.LocToString(p.getChest().getLocation()) + ".";
-		
+		String path = "party-chests." + p.getChestString() + ".";
+
+		c.set(path + "enabled", p.isEnabled());
 		c.set(path + "balloon-count", p.getCount());
 		c.set(path + "balloon-material", p.getMaterial());
 		c.set(path + "pull-lever-cost", p.getCost());
-		c.set(path + "type", p.getRegionTarget());
+		c.set(path + "type", p.getRegionTarget().toString());
 		c.set(path + "worldguard-region", p.getRegion());
 		c.set(path + "radius", p.getRadius());
 	}

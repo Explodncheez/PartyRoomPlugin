@@ -15,6 +15,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +27,8 @@ import partyroom.PartyChest;
 import partyroom.PartyRoom;
 import partyroom.PartyRoomHandler;
 import partyroom.Utilities;
+import partyroom.gui.ActionBar;
+import partyroom.gui.ChestEditor;
 
 public class PartyListener implements Listener {
 	
@@ -46,8 +49,8 @@ public class PartyListener implements Listener {
 				e.setCancelled(true);
 				
 				PartyChest Pchest = PartyRoomHandler.getPartyChest(e.getClickedBlock().getMetadata("partyroom").get(0).asString());
-				e.getClickedBlock().getWorld().playEffect(e.getClickedBlock().getLocation().add(0.5, 0.5, 0.5), Effect.EXPLOSION_LARGE, 0);
-				e.getPlayer().playSound(e.getClickedBlock().getLocation(), Sound.CHICKEN_EGG_POP, 0.8F, 0.5F);
+				e.getClickedBlock().getWorld().playEffect(e.getClickedBlock().getLocation().add(0.5, 0.5, 0.5), PartyRoom.isSpigot() ? Effect.EXPLOSION_LARGE : Effect.SMOKE, 0);
+				e.getPlayer().playSound(e.getClickedBlock().getLocation(), Sound.ENTITY_CHICKEN_EGG, 0.8F, 0.5F);
 				
 				ItemStack loot = Pchest.getRandomLoot();
 				if (loot != null)
@@ -65,7 +68,7 @@ public class PartyListener implements Listener {
 					if (!p.hasPermission("partyroom.pull")) {
 						e.setCancelled(true);
 						p.sendMessage(PartyRoom.PREFIX + "You do not have permission to start Drop Parties!");
-						p.playSound(p.getLocation(), Sound.ZOMBIE_METAL, 0.4F, 1.2F);
+						p.playSound(p.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.4F, 1.2F);
 						return;
 					}
 					
@@ -84,8 +87,16 @@ public class PartyListener implements Listener {
 				}
 				
 			} else if (e.getClickedBlock().getType() == Material.CHEST && e.getAction() == Action.RIGHT_CLICK_BLOCK && PartyRoomHandler.isPartyChest(e.getClickedBlock())) {
-				e.getPlayer().sendMessage(PartyRoom.PREFIX + "§cWARNING: Anything you put in this chest CANNOT be taken out!!");
-				e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.NOTE_PLING, 0.8F, 0.9F);
+				if (e.getPlayer().hasPermission("partyroom.create") && e.getPlayer().isSneaking()) {
+					PartyChest Pchest = PartyRoomHandler.getPartyChest(Utilities.LocToString(e.getClickedBlock().getLocation()));
+					ChestEditor ce = ChestEditor.get(Pchest);
+					ce.openInventory(e.getPlayer());
+					e.setCancelled(true);
+					return;
+				}
+				e.getPlayer().sendMessage(PartyRoom.PREFIX + "§c§lWARNING: §fAnything you put in this chest §c§lCANNOT §fbe taken out!!");
+				new ActionBar().sendMessage(e.getPlayer(), "§c§lWARNING: §fAnything you put in this chest §c§lCANNOT §fbe taken out!");
+				e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 0.8F, 0.9F);
 				
 				// Bypasses protection plugins
 				e.getPlayer().openInventory(((Chest) e.getClickedBlock().getState()).getBlockInventory());
@@ -99,6 +110,12 @@ public class PartyListener implements Listener {
 			
 			Player p = (Player) e.getWhoClicked();
 			
+			ChestEditor ce = ChestEditor.get(p);
+			if (ce != null) {
+				ce.handle(e);
+				return;
+			}
+			
 			if (e.getView().getTopInventory().getHolder() instanceof Chest) {
 				Chest chest = (Chest) e.getView().getTopInventory().getHolder();
 				if (PartyRoomHandler.isPartyChest(chest)) {
@@ -108,23 +125,23 @@ public class PartyListener implements Listener {
 						if (!p.hasPermission("partyroom.withdraw")) {
 							e.setCancelled(true);
 							p.sendMessage(PartyRoom.PREFIX + "You can't take items out of Party Chests!");
-							p.playSound(p.getLocation(), Sound.ZOMBIE_METAL, 0.4F, 1.2F);
+							p.playSound(p.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.4F, 1.2F);
 						}
 						return;
 					} else {
 						if (!p.hasPermission("partyroom.deposit")) {
 							e.setCancelled(true);
 							p.sendMessage(PartyRoom.PREFIX + "You do not have permission to deposit items!");
-							p.playSound(p.getLocation(), Sound.ZOMBIE_METAL, 0.4F, 1.2F);
+							p.playSound(p.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.4F, 1.2F);
 							return;
 						}
 						if (PartyRoomHandler.getPartyChest(Utilities.LocToString(chest.getLocation())).isPulled()) {
 							e.setCancelled(true);
 							p.sendMessage(PartyRoom.PREFIX + "There is currently a drop going on!");
-							p.playSound(p.getLocation(), Sound.ZOMBIE_METAL, 0.4F, 1.2F);
+							p.playSound(p.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.4F, 1.2F);
 							return;
 						}
-						p.playSound(p.getLocation(), Sound.NOTE_PLING, 0.4F, 0.7F);
+						p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 0.4F, 0.7F);
 					}
 					
 				}
@@ -162,6 +179,11 @@ public class PartyListener implements Listener {
 			e.setCancelled(true);
 			e.getPlayer().sendMessage(PartyRoom.PREFIX + "Party Room Chests don't work as Double Chests, sorry.");
 		}
+	}
+	
+	@EventHandler
+	public void inventoryClose(InventoryCloseEvent e) {
+		ChestEditor.removeEditor((Player) e.getPlayer());
 	}
 
 }

@@ -1,0 +1,95 @@
+#
+#                                                              
+#  THIS FIRST PART IS JUST AN EXAMPLE AND WON'T DO ANYTHING!!  
+#           (You can delete this part if you want)             
+#                                                              
+example-default-config:
+#
+# Each entry is defined by the location of the chest                                      
+  WORLD,X,Y,Z:
+
+#
+# Enabled or not.                                                                         
+    enabled: false
+
+#
+# Number of balloons to drop every Lever-Pull.                                            
+
+    balloon-count: 10
+
+#
+# Block to serve as 'balloons.'                                                           
+    balloon-material: CAKE_BLOCK:0
+
+#
+# Cost in $ of each Lever-Pull. Does nothing unless Vault is installed.                   
+    pull-lever-cost: 0.0
+
+#
+# Type of drop: 'RADIUS' will drop in a cube around the chest.                            
+# 'REGION' will drop in a CUBOID WorldGuard region. Does not support other shapes.        
+# Using 'REGION' without WorldGuard installed will not work. (Duh)                        
+    type: RADIUS  
+
+#
+# How high up balloons are dropped in the region.                                         
+# 'DEFAULT' will drop balloons in a random height, capped at +8.                          
+# 'RANDOM' will drop balloons in a random height, non-capped.                             
+# 'MAX' and 'MIN' will respectively drop balloons at the max and min heights.             
+    balloon-spawn-height: DEFAULT
+
+#
+# WorldGuard Region to drop balloons. Will not do anything unless using REGION mode.      
+    worldguard-region: 'ReallyCoolRegionName'   
+
+#
+# Radius around the chest to drop balloons. Will not do anything unless using RADIUS mode.
+    radius: 10    
+
+#
+# Minimum number of chest slots that must be filled to start a Drop Party.
+    min-slots-to-drop: 0
+    
+#
+# Delay in seconds between lever-pull and drop party start.                               
+# During this time, no new items can be added to the chest.                               
+    drop-party-delay: 0
+    
+#
+# Delay in seconds needed before a drop party can be started again.
+# Starts counting down immediately after lever is pulled.
+    drop-party-cooldown: 0
+
+#
+# Announce the impending drop party every [this many] seconds. 0 = option disabled.       
+# If not zero, the announce-message will be broadcasted when the lever is first pulled,   
+# and every time this interval is reached until the party begins.                         
+    announce-interval: 0
+
+#
+# Format for the Time-Left announcement. Use %TIME% for the time remaining (with units).  
+    announce-message: '&6Drop Party will start in &e%TIME%&6!'
+    start-message: '&6Drop Party has started!'
+
+
+#                                                  
+#  Actual config begins beyond these number signs  
+#           
+
+#
+# Logs information in the console useful for bugfixing    
+debug: false
+
+# Blacklist format:
+# global-blacklist:
+#   MATERIAL,DATA: (you can leave off the ",DATA" if 0)
+#     - name
+#     - name
+#
+# Players will not be able to deposit MATERIALs with the specified names.
+# (Use '&' for color codes)
+# If this list is empty ([]), all MATERIALs of this type will be blacklisted.
+# If you want to blacklist nothing, use 'global-blacklist: {}'.
+# Blacklists for individual chests follow the same format.
+global-blacklist: {}
+party-chests: {}

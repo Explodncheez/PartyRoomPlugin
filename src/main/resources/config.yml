@@ -68,8 +68,8 @@ example-default-config:
 
 #
 # Format for the Time-Left announcement. Use %TIME% for the time remaining (with units).  
-    announce-message: '&6Drop Party will start in &e%TIME%&6!'
-    start-message: '&6Drop Party has started!'
+    announce-message: '&6Drop Party %NAME% will start in &e%TIME%&6! Use &e/proom view %NAME% &6to see its contents!'
+    start-message: '&6Drop Party %NAME% has started!'
 
 
 #                                                  
@@ -92,4 +92,16 @@ debug: false
 # If you want to blacklist nothing, use 'global-blacklist: {}'.
 # Blacklists for individual chests follow the same format.
 global-blacklist: {}
+messages:
+  warn-deposit: '§c§lWARNING: §fAnything you put in this chest §c§lCANNOT §fbe taken out!!'
+  attempt-withdraw-fail: 'You can''t take items out of Party Chests!'
+  attempt-deposit-fail: 'You do not have permission to deposit items!'
+  attempt-blacklist-fail: 'This item may not be deposited here!'
+  attempt-blacklist-success: 'WARN: that item is blacklisted!'
+  not-enabled: 'This Party Chest is not enabled.'
+  already-dropping: 'There''s already a Drop Party going on!'
+  cooling-down: 'You must wait another %VAR% to start another Drop Party!'
+  not-filled-enough: 'This Party needs at least %VAR% chest-slots filled to begin!'
+  attempt-pay-success: 'You pay §e%VAR% §rand start the Drop Party!' 
+  attempt-pay-fail: '§cNot enough money! §fThis costs §e%VAR%§f!'
 party-chests: {}

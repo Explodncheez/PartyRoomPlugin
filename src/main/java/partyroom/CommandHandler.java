@@ -9,7 +9,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import partyroom.PartyChest.RegionTarget;
 import partyroom.PartyChest.YSpawnTarget;
 import partyroom.gui.ChestEditor;
@@ -19,7 +18,7 @@ public class CommandHandler implements CommandExecutor {
 	
 	String[] help = {
 		"§f§m================================",
-		"§6§l<<==>> §e§lParty Room v3.01 §6§l<<==>>",
+		"§6§l<<==>> §e§lParty Room v3.21 §6§l<<==>>",
 		"",
 		"§eInspired by §aRunescape's Falador Party Room§e!",
 		"§fDeposit items into §bParty Chests§f and pull a §bLever",
@@ -36,6 +35,7 @@ public class CommandHandler implements CommandExecutor {
 	String[] commands = {
 		"§f§m================================",
 		"§2§lCommands:",
+		"§a/proom view {name}: §fView a party chest",
 		"§a/proom create: §fUse when looking at any",
 		"§f§lsingle chest §rto create a Party Chest.",
 		"§a/proom remove: §fUse when looking at any",
@@ -54,6 +54,30 @@ public class CommandHandler implements CommandExecutor {
 		if (cmd.equalsIgnoreCase("proom")) {
 			if (args.length > 0) {
 				String s = args[0];
+				if (s.equalsIgnoreCase("view") && sender instanceof Player) {
+					Player p = (Player) sender;
+					if  (!p.hasPermission("partyroom.view")) {
+						p.sendMessage(PartyRoom.PREFIX + "You do not have permission to remotely view Party Chest contents!");
+						p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+						return true;
+					}
+					if (args.length > 1) {
+						String chestname = args[1].toLowerCase();
+						PartyChest chest = PartyRoom.getPlugin().handler.getByName(chestname);
+						if (chest != null) {
+							p.openInventory(chest.getChest().getBlockInventory());
+							ChestEditor.addViewer(p);
+						} else {
+							p.sendMessage(PartyRoom.PREFIX + "The §o" + args[1] + "§r party chest does not exist.");
+							p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+							return true;
+						}
+					} else {
+						p.sendMessage(PartyRoom.PREFIX + "No chest specified. Use as §o/proom view [chestName]");
+						p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+						return true;
+					}
+				}
 				if (s.equalsIgnoreCase("create") && sender instanceof Player) {
 					Player p = (Player) sender;
 					if (!p.hasPermission("partyroom.create")) {
@@ -70,9 +94,10 @@ public class CommandHandler implements CommandExecutor {
 					if (block.getState() instanceof Chest) {
 						Chest chest = (Chest) block.getState();
 						if (!PartyRoom.getPlugin().handler.isPartyChest(chest)) {
-							new PartyChest(Utilities.LocToString(chest.getLocation()), 20, Material.CAKE_BLOCK, (byte) 0, 0, RegionTarget.RADIUS, YSpawnTarget.DEFAULT, 0, 0, 0, 0, "&6Drop Party will start in &e%TIME%&6!", "§6Drop Party has started!", 10, "", false, null);
+							int id = PartyRoom.getPlugin().handler.n();
+							new PartyChest(Utilities.LocToString(chest.getLocation()), "" + id, false, 20, Material.CAKE_BLOCK, (byte) 0, new PullCost(), RegionTarget.RADIUS, YSpawnTarget.DEFAULT, 0, 0, 0, 0, "&6Drop Party will start in &e%TIME%&6!", "§6Drop Party has started!", 10, "", false, null, null);
 							LoaderAndSaver.saveChests(PartyRoom.getConfiguration());
-							p.sendMessage(PartyRoom.PREFIX + "§eTurned that Chest into a Party Chest!");
+							p.sendMessage(PartyRoom.PREFIX + "§eTurned that Chest into a Party Chest with id: " + id + "!");
 							p.sendMessage(PartyRoom.PREFIX + "Edit it in §eplugin config §for via §eSneak+RightClick§f.");
 							p.sendMessage(PartyRoom.PREFIX + "Don't forget to place a Lever near the Chest!");
 							p.playSound(p.getLocation(), Sounds.ENTITY_PLAYER_LEVELUP.a(), 0.4F, 1.4F);
@@ -179,6 +204,22 @@ public class CommandHandler implements CommandExecutor {
 						p.sendMessage(PartyRoom.PREFIX + "The block you are looking at is not a Party Chest!");
 						p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
 					}
+					return true;
+				}
+				if (s.equalsIgnoreCase("clear")  && sender.hasPermission("partyroom.create")) {
+					if (args.length > 1) {
+						PartyChest pchest = PartyRoom.getPlugin().handler.getByName(args[1].toLowerCase());
+						if (pchest != null) {
+							pchest.getChest().getBlockInventory().clear();
+							sender.sendMessage(PartyRoom.PREFIX + "The " + args[1] + " Party Chest has been cleared!");
+							if (sender instanceof Player) {
+								Player p = (Player) sender;
+								p.playSound(p.getLocation(), Sounds.ENTITY_ITEM_BREAK.a(), 1.0F, 0.8F);
+							}
+							return true;
+						}
+					}
+					sender.sendMessage(PartyRoom.PREFIX + "Proper usage: §o/proom clear [name]");
 					return true;
 				}
 				if (s.equalsIgnoreCase("help")) {

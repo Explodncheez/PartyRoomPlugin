@@ -11,11 +11,16 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import partyroom.ConfigMessages.ConfigMessage;
 import partyroom.gui.ChestEditor;
 import partyroom.versions.SoundHandler.Sounds;
 
@@ -28,6 +33,12 @@ public class PartyChest {
 	public enum RegionTarget {
 		RADIUS,
 		REGION
+	}
+	
+	public enum ChestParticles {
+		SPIRAL_FALL,
+		RANDOM_FALL,
+		SPARKLE;
 	}
 	
 	public enum YSpawnTarget {
@@ -69,8 +80,8 @@ public class PartyChest {
 		}
 	}
 	
-	private String chestLocation;
-	private double cash;
+	private String chestLocation, chestName;
+	private PullCost pcost;
 	private int radius, count;
 	private String regionName;
 	private RegionTarget rtarget;
@@ -83,14 +94,15 @@ public class PartyChest {
 	private String announceMessage, startMessage;
 	
 	private Map<String, HashSet<String>> blacklist;
+	private ChestParticles particle;
 	
-	private boolean delayed, pulled, enabled, coolingdown;
+	private boolean stack, delayed, pulled, enabled, coolingdown;
 	private long time;
 	
-	public PartyChest(String chest, int ballooncount, Material blockType, byte blockData, double cashCostToPull, RegionTarget rtarget, YSpawnTarget ytarget, int dropDelay, int dropCooldown, int announceDelay, int minSlots, String announceMessage, String startMessage, int radius, String region, boolean enabled, Map<String, HashSet<String>> blacklist) {
+	public PartyChest(String chest, String chestName, boolean stack, int ballooncount, Material blockType, byte blockData, PullCost pcost, RegionTarget rtarget, YSpawnTarget ytarget, int dropDelay, int dropCooldown, int announceDelay, int minSlots, String announceMessage, String startMessage, int radius, String region, boolean enabled, Map<String, HashSet<String>> blacklist, ChestParticles particles) {
 		
 		this.chestLocation = chest;
-		this.cash = cashCostToPull;
+		this.pcost = pcost;
 		this.rtarget = rtarget;
 		this.ytarget = ytarget;
 		this.radius = radius;
@@ -99,6 +111,8 @@ public class PartyChest {
 		this.enabled = enabled;
 		this.dropCooldown = dropCooldown;
 		this.blacklist = blacklist == null ? new HashMap<String, HashSet<String>>() : blacklist;
+		this.chestName = chestName;
+		this.stack = stack;
 		
 		this.dropDelay = dropDelay;
 		this.announceDelay = announceDelay;
@@ -106,6 +120,8 @@ public class PartyChest {
 		this.announceMessage = announceMessage.replace("&", "§");
 		this.startMessage = startMessage.replace("&", "§");
 		Block block = Utilities.StringToLoc(chestLocation).getBlock();
+		
+		this.particle = particles;
 		
 		setMaterial(blockType, blockData);
 		
@@ -122,6 +138,14 @@ public class PartyChest {
 		PartyRoom.getPlugin().handler.addPartyChest(this);
 	}
 	
+	public ChestParticles getEnumParticle() {
+		return particle;
+	}
+	
+	public String getChestParticle() {
+		return particle == null ? "none" : particle.toString();
+	}
+	
 	public Map<String, HashSet<String>> getBlacklist() {
 		return blacklist;
 	}
@@ -132,6 +156,14 @@ public class PartyChest {
 	
 	public void setEnabled(boolean e) {
 		enabled = e;
+	}
+	
+	public boolean stack() {
+		return stack;
+	}
+	
+	public void setStack(boolean b) {
+		stack = b;
 	}
 	
 	/**
@@ -169,17 +201,26 @@ public class PartyChest {
 		minSlots = slots;
 	}
 	
+	public String getName() {
+		return chestName;
+	}
+	
+	public void setName(String name) {
+		PartyRoom.getPlugin().handler.handleNameChange(chestName, name, this);
+		chestName = name;
+	}
+	
 	public String getAnnounceMessage(int timeLeft) {
 		int minutes = timeLeft / 60, seconds = timeLeft % 60;
-		return announceMessage.replace("%TIME%", (minutes > 0 ? minutes + " minute" + (minutes == 1 ? ", " : "s, ") : "") + seconds + " second" + (seconds == 1 ? "" : "s"));
+		return announceMessage.replace("%NAME%", chestName).replace("%TIME%", (minutes > 0 ? minutes + " minute" + (minutes == 1 ? ", " : "s, ") : "") + seconds + " second" + (seconds == 1 ? "" : "s"));
 	}
 	
 	public String getAnnounceMessage() {
-		return announceMessage;
+		return announceMessage.replace("%NAME%", chestName);
 	}
 	
 	public String getStartMessage() {
-		return startMessage;
+		return startMessage.replace("%NAME%", chestName);
 	}
 	
 	public void setAnnounceMessage(String s) {
@@ -194,12 +235,12 @@ public class PartyChest {
 		pulled = pull;
 	}
 
-	public double getCost() {
-		return cash;
+	public PullCost getCost() {
+		return pcost;
 	}
 	
-	public void setCost(double c) {
-		cash = c;
+	public void setCost(String s) {
+		pcost.reload(s);
 	}
 	
 	public int getRadius() {
@@ -330,18 +371,18 @@ public class PartyChest {
 	
 	public boolean attemptPull(Player puller) {
 		if (!enabled) {
-			puller.sendMessage(PartyRoom.PREFIX + "This Party Chest is not enabled!");
+			puller.sendMessage(PartyRoom.PREFIX + ConfigMessage.NOT_ENABLED.getString(null));
 			return false;
 		}
 		
 		if (pulled || delayed) {
-			puller.sendMessage(PartyRoom.PREFIX + "There's already a Drop Party going on!");
+			puller.sendMessage(PartyRoom.PREFIX + ConfigMessage.ALREADY_DROPPING.getString(null));
 			return false;
 		}
 		
 		if (coolingdown) {
 			long t = (dropCooldown - (System.currentTimeMillis() - time) / 1000);
-			puller.sendMessage(PartyRoom.PREFIX + "You must wait §e" + t + " §fmore second" + (time == 1 ? "" : "s") + " before starting another Drop Party.");
+			puller.sendMessage(PartyRoom.PREFIX + ConfigMessage.COOLING_DOWN.getString(t + " §fmore second" + (time == 1 ? "" : "s")));
 			return false;
 		}
 		
@@ -352,31 +393,20 @@ public class PartyChest {
 					count++;
 			}
 			if (count < minSlots) {
-				puller.sendMessage(PartyRoom.PREFIX + "This Party needs at least " + minSlots + " chest-slots filled to begin!");
+				puller.sendMessage(PartyRoom.PREFIX + ConfigMessage.NOT_FILLED_ENOUGH.getString("" + minSlots));
 				return false;
 			}
 		}
 		
-		if (PartyRoom.getEcon() != null && cash > 0) {
-			if (PartyRoom.getEcon().has(puller, cash)) {
-				PartyRoom.getEcon().withdrawPlayer(puller, cash);
-				puller.sendMessage(PartyRoom.PREFIX + "You pay §e$" + cash + " §rand start the Drop Party!");
-			} else {
-				puller.sendMessage(PartyRoom.PREFIX + "§cNot enough money! §fThis costs §e" + cash + "§f!");
-				return false;
-			}
-		}
-
-		pulled = true;
-		PartyRoomRegion PRoom = getProomRegion();
-		if (PRoom == null) {
-			if (cash > 0) {
-				PartyRoom.getEcon().depositPlayer(puller, cash);
-				pulled = false;
-			}
+		if (pcost != null && !pcost.has(puller)) {
 			return false;
 		}
 
+		PartyRoomRegion PRoom = getProomRegion();
+		if (PRoom == null)
+			return false;
+
+		pulled = true;
 		PartyRoom.debug("Delaying drop party by " + dropDelay + " seconds...");
 		delayedDrop(PRoom);
 		return true;
@@ -449,6 +479,84 @@ public class PartyChest {
 				}
 			}
 		}.runTaskTimer(PartyRoom.getPlugin(), 20L, 20L);
+	}
+	
+	public boolean depositItem(InventoryInteractEvent e, ItemStack item) {
+		e.setCancelled(true);
+		if (item == null || (e instanceof InventoryClickEvent && ((InventoryClickEvent) e).getClick() == ClickType.DOUBLE_CLICK))
+			return false;
+		
+		Player p = (Player) e.getWhoClicked();
+
+		if (!p.hasPermission("partyroom.deposit")) {
+			p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_DEPOSIT_FAIL.getString(null));
+			p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+			return false;
+		}
+		
+		if (PartyRoom.getPlugin().handler.isBlacklisted(item, this)) {
+			if (p.hasPermission("partyroom.bypass")) {
+				p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_BLACKLIST_SUCCESS.getString(null));
+				p.playSound(p.getLocation(), Sounds.ENTITY_ITEM_BREAK.a(), 0.4F, 1.8F);
+			} else {
+				p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_BLACKLIST_FAIL.getString(getName()));
+				p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+				return false;
+			}
+		}
+		if (isPulled()) {
+			p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ALREADY_DROPPING.getString(null));
+			p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+			return false;
+		}
+		
+		if (stack()) {
+			ItemStack overflow = item.clone();
+			overflow.setAmount(a(e.getView().getTopInventory(), overflow.clone()));
+			
+			if (overflow.getAmount() > 0)
+				for (ItemStack extra : p.getInventory().addItem(overflow).values())
+					p.getWorld().dropItem(p.getLocation(), extra);
+			
+		} else {
+			for (ItemStack extra : getChest().getBlockInventory().addItem(item).values())
+				for (ItemStack ovf : p.getInventory().addItem(extra).values())
+					p.getWorld().dropItem(p.getLocation(), ovf);
+		}
+		p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.4F, 0.7F);
+		return true;
+	}
+	
+	private int a(Inventory inv, ItemStack item) {
+		int a = item.getAmount();
+		int slot;
+		if (item.getAmount() == 64 && (slot = inv.firstEmpty()) > -1) {
+			inv.setItem(slot, item);
+			return 0;
+		}
+		
+		for (int i = 0; i < inv.getSize(); i++) {
+			if (inv.getContents()[i] == null)
+				continue;
+			ItemStack compare = inv.getContents()[i];
+			if (compare.getAmount() < 64 && item.isSimilar(compare)) {
+				int amount = compare.getAmount() + item.getAmount();
+				a = amount - 64;
+				compare.setAmount(Math.min(64, amount));
+				
+				if (a > 0) {
+					item.setAmount(a);
+					return a(inv, item);
+				}
+				break;
+			}
+		}
+		
+		if (a > 0 && (slot = inv.firstEmpty()) > -1) {
+			inv.setItem(slot, item);
+			return 0;
+		}
+		return a;
 	}
 	
 	public void forceStart() {

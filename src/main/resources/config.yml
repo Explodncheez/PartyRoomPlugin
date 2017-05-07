@@ -7,10 +7,18 @@ example-default-config:
 #
 # Each entry is defined by the location of the chest                                      
   WORLD,X,Y,Z:
+  
+#
+# Name identifier of chest
+    name: 'lol'
 
 #
 # Enabled or not.                                                                         
     enabled: false
+    
+#
+# Whether or not to stack unstackable items
+    stack-unstackables: false
 
 #
 # Number of balloons to drop every Lever-Pull.                                            
@@ -67,7 +75,9 @@ example-default-config:
     announce-interval: 0
 
 #
-# Format for the Time-Left announcement. Use %TIME% for the time remaining (with units).  
+# Format for the Time-Left announcement.
+# %TIME% = the time remaining (with units).  
+# %NAME% = the lowercase name of the party chest.
     announce-message: '&6Drop Party %NAME% will start in &e%TIME%&6! Use &e/proom view %NAME% &6to see its contents!'
     start-message: '&6Drop Party %NAME% has started!'
 
@@ -75,6 +85,9 @@ example-default-config:
 #                                                  
 #  Actual config begins beyond these number signs  
 #           
+
+# DO NOT CHANGE THIS
+version: 1
 
 #
 # Logs information in the console useful for bugfixing    
@@ -93,15 +106,23 @@ debug: false
 # Blacklists for individual chests follow the same format.
 global-blacklist: {}
 messages:
-  warn-deposit: '§c§lWARNING: §fAnything you put in this chest §c§lCANNOT §fbe taken out!!'
+  warn-deposit: '&c&lWARNING: &fAnything you put in this chest &c&lCANNOT &fbe taken out!!'
   attempt-withdraw-fail: 'You can''t take items out of Party Chests!'
   attempt-deposit-fail: 'You do not have permission to deposit items!'
   attempt-blacklist-fail: 'This item may not be deposited here!'
   attempt-blacklist-success: 'WARN: that item is blacklisted!'
   not-enabled: 'This Party Chest is not enabled.'
   already-dropping: 'There''s already a Drop Party going on!'
+  #
+  # %VAR% = time left
   cooling-down: 'You must wait another %VAR% to start another Drop Party!'
+  #
+  # %VAR% = slots required
   not-filled-enough: 'This Party needs at least %VAR% chest-slots filled to begin!'
-  attempt-pay-success: 'You pay §e%VAR% §rand start the Drop Party!' 
-  attempt-pay-fail: '§cNot enough money! §fThis costs §e%VAR%§f!'
+  #
+  # %VAR% = cost
+  attempt-pay-success: 'You pay &e%VAR% &rand start the Drop Party!' 
+  #
+  # %VAR% = cost
+  attempt-pay-fail: '&cNot enough money! &fThis costs &e%VAR%&f!'
 party-chests: {}

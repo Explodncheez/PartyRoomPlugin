@@ -15,9 +15,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -28,6 +29,7 @@ import partyroom.OwnedItemStack;
 import partyroom.PartyChest;
 import partyroom.PartyRoom;
 import partyroom.Utilities;
+import partyroom.ConfigMessages.ConfigMessage;
 import partyroom.gui.ChestEditor;
 import partyroom.versions.SoundHandler.Sounds;
 
@@ -75,7 +77,7 @@ public class PartyListener implements Listener {
 					Player p = e.getPlayer();
 					if (!p.hasPermission("partyroom.pull")) {
 						e.setCancelled(true);
-						p.sendMessage(PartyRoom.PREFIX + "You do not have permission to start Drop Parties!");
+						p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_DEPOSIT_FAIL.getString(null));
 						p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
 						return;
 					}
@@ -102,7 +104,7 @@ public class PartyListener implements Listener {
 					e.setCancelled(true);
 					return;
 				}
-				e.getPlayer().sendMessage(PartyRoom.PREFIX + "§c§lWARNING: §fAnything you put in this chest §c§lCANNOT §fbe taken out!!");
+				e.getPlayer().sendMessage(PartyRoom.PREFIX + ConfigMessage.WARN_DEPOSIT.getString(null));
 				e.getPlayer().playSound(e.getPlayer().getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 0.9F);
 				
 				// Bypasses protection plugins
@@ -113,10 +115,31 @@ public class PartyListener implements Listener {
 	}
 	
 	@EventHandler
+	public void onChestDraggy(InventoryDragEvent e) {
+		if (e.getWhoClicked() instanceof Player) {
+			Player p = (Player) e.getWhoClicked();
+
+			if (ChestEditor.isViewing(p)) {
+				e.setCancelled(true);
+				return;
+			}
+
+			if (e.getView().getTopInventory().getHolder() instanceof Chest) {
+				Chest chest = (Chest) e.getView().getTopInventory().getHolder();
+				if (PartyRoom.getPlugin().handler.isPartyChest(chest)) 
+					e.setCancelled(true);
+			}
+		}
+	}
+	
+	@EventHandler
 	public void onChestClicky(InventoryClickEvent e) {
 		if (e.getWhoClicked() instanceof Player) {
 			
 			Player p = (Player) e.getWhoClicked();
+			
+			if (e.getSlot() == -1)
+				return;
 			
 			ChestEditor ce = ChestEditor.get(p);
 			if (ce != null) {
@@ -124,45 +147,46 @@ public class PartyListener implements Listener {
 				return;
 			}
 			
+			if (ChestEditor.isViewing(p)) {
+				e.setCancelled(true);
+				return;
+			}
+			
 			if (e.getView().getTopInventory().getHolder() instanceof Chest) {
 				Chest chest = (Chest) e.getView().getTopInventory().getHolder();
-				if (PartyRoom.getPlugin().handler.isPartyChest(chest)) {
-					
+				PartyChest pc = PartyRoom.getPlugin().handler.getPartyChest(Utilities.LocToString(chest.getLocation()));
+				
+				if (pc != null) {
+
 					//top inventory clicks
-					if (e.getRawSlot() < e.getView().getTopInventory().getSize() || (e.getClick() == ClickType.DOUBLE_CLICK && e.getCursor() != null && e.getView().getTopInventory().contains(e.getCursor().getType()))) {
-						if (!p.hasPermission("partyroom.withdraw")) {
+					if (e.getRawSlot() < e.getView().getTopInventory().getSize()) {
+						if (e.getCursor().getType() != Material.AIR) {
 							e.setCancelled(true);
-							p.sendMessage(PartyRoom.PREFIX + "You can't take items out of Party Chests!");
-							p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
-						}
-						return;
-					} else {
-						if (!p.hasPermission("partyroom.deposit")) {
-							e.setCancelled(true);
-							p.sendMessage(PartyRoom.PREFIX + "You do not have permission to deposit items!");
-							p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+							if (pc.depositItem(e, e.getCursor()))
+								e.setCursor(null);
 							return;
 						}
 						
-						PartyChest pc = PartyRoom.getPlugin().handler.getPartyChest(Utilities.LocToString(chest.getLocation()));
-						if (PartyRoom.getPlugin().handler.isBlacklisted(e.getCurrentItem(), pc)) {
-							if (p.hasPermission("partyroom.bypass")) {
-								p.sendMessage(PartyRoom.PREFIX + "WARN: that item is blacklisted!");
-								p.playSound(p.getLocation(), Sounds.ENTITY_ITEM_BREAK.a(), 0.4F, 1.8F);
-							} else {
+						if (e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR) {
+							if (!p.hasPermission("partyroom.withdraw")) {
 								e.setCancelled(true);
-								p.sendMessage(PartyRoom.PREFIX + "This item may not be deposited here!");
+								p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_WITHDRAW_FAIL.getString(null));
 								p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
-								return;
 							}
 						}
-						if (pc.isPulled()) {
-							e.setCancelled(true);
-							p.sendMessage(PartyRoom.PREFIX + "There is currently a drop going on!");
-							p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
-							return;
+					} else {
+						if (e.getAction() == InventoryAction.COLLECT_TO_CURSOR && e.getView().getTopInventory().contains(e.getCursor().getType())) {
+							if (!p.hasPermission("partyroom.withdraw")) {
+								e.setCancelled(true);
+								p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_WITHDRAW_FAIL.getString(null));
+								p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+							}
 						}
-						p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.4F, 0.7F);
+						if (e.isShiftClick()) {
+							if (pc.depositItem(e, e.getCurrentItem()))
+								e.setCurrentItem(null);
+						}
+						
 					}
 					
 				}
@@ -204,7 +228,9 @@ public class PartyListener implements Listener {
 	
 	@EventHandler
 	public void inventoryClose(InventoryCloseEvent e) {
-		ChestEditor.removeEditor((Player) e.getPlayer());
+		Player p = (Player) e.getPlayer();
+		ChestEditor.removeEditor(p);
+		ChestEditor.removeViewer(p);
 	}
 
 }

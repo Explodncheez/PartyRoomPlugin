@@ -1,7 +1,10 @@
 package partyroom.gui;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
@@ -26,6 +29,7 @@ import partyroom.versions.SoundHandler.Sounds;
 public class ChestEditor {
 	
 	private static Map<String, ChestEditor> Editors = new HashMap<String, ChestEditor>();
+	private static Set<UUID> Viewers = new HashSet<UUID>();
 	private static Map<Player, ChestEditor> PlayerEditors = new WeakHashMap<Player, ChestEditor>();
 	
 	public static void addPlayerEditor(Player p, ChestEditor ce) {
@@ -34,6 +38,18 @@ public class ChestEditor {
 	
 	public static void removeEditor(String stringloc) {
 		Editors.remove(stringloc);
+	}
+	
+	public static void addViewer(Player p) {
+		Viewers.add(p.getUniqueId());
+	}
+	
+	public static void removeViewer(Player p) {
+		Viewers.remove(p.getUniqueId());
+	}
+	
+	public static boolean isViewing(Player p) {
+		return Viewers.contains(p.getUniqueId());
 	}
 	
 	public static ChestEditor get(PartyChest chest) {
@@ -62,6 +78,7 @@ public class ChestEditor {
 	}
 	
 	public enum AnvilEditor {
+		NAME,
 		MATERIAL,
 		COUNT,
 		COST,
@@ -88,22 +105,25 @@ public class ChestEditor {
 	private Map<Player, AnvilEditor> thingy;
 	
 	private void update() {
+		editorInterface.setItem(0, Utilities.ConstructItemStack(Material.NAME_TAG, 1, 0, "§a§lParty Chest Name", "§e<< §f" + chest.getName() + " §e>>", "", "", "§f§l[ Click to Change ]"));
 		editorInterface.setItem(1, Utilities.ConstructItemStack(Material.CAKE, 1, 0, "§a§lBalloon Block Type", "§e<< §f" + chest.getBlockMaterial().toString().toLowerCase() + " §e>>", "", "§f§l[ Click to Change ]"));
 		editorInterface.setItem(2, Utilities.ConstructItemStack(Material.MELON_SEEDS, 1, 0, "§b§lBalloon Count", "§e<< §f" + chest.getCount() + " §e>>", "", "§f§l[ Click to Change ]"));
 		editorInterface.setItem(3, Utilities.ConstructItemStack(Material.FEATHER, 1, 0, "§c§lBalloon Height", "§e<< §f" + chest.getYTarget().toString() + " Region Y-coord §e>>", chest.getYTarget().getDescription(), "", "§f§l[ Click to Change ]"));
 		editorInterface.setItem(4, Utilities.ConstructItemStack(Material.LEVER, 1, 0, "§6§lLever-Pull Cost", "§e<< §f$" + chest.getCost() + " §e>>", "", "§f§l[ Click to Change ]"));
 		editorInterface.setItem(5, Utilities.ConstructItemStack(Material.FLINT, 1, 0, "§c§lRegion Type", "§e<< §f" + chest.getRegionTarget().toString().toLowerCase() + " §e>>", chest.getRegionTarget() == RegionTarget.RADIUS ? "§eRadius: " + chest.getRadius() : "§eRegion: " + chest.getRegion(), "", "§f§l[ Click to Change ]"));
 		
-		editorInterface.setItem(10, Utilities.ConstructItemStack(Material.WATCH, 1, 0, "§c§lDrop Party Delay", "§e<< §f" + chest.getDropDelay() + " second(s) §e>>", "§7Drop Party starts after this delay", "§7when the lever is pulled.", "", "§f§l[ Click to Change ]"));
-		editorInterface.setItem(11, Utilities.ConstructItemStack(Material.CHEST, 1, 0, "§6§lMinimum Drop Capacity", "§e<< §f" + chest.getMinSlots() + " items §e>>", "§7Drop Party cannot be started unless", "§7the chest has this many slots filled.", "", "§f§l[ Click to Change ]"));
-		editorInterface.setItem(12, Utilities.ConstructItemStack(Material.SIGN, 1, 0, "§a§lAnnouncement Delay", "§e<< §f" + (chest.getAnnounceInterval() > 0 ? chest.getAnnounceInterval() : "0 §c(disabled)") + " §e>>", "§7Repeatively announces the time remaining", "§7until Drop Party after this delay.", "§7Does nothing if §cDrop Party Delay§7 is 0.", "", "§f§l[ Click to Change ]"));
-		editorInterface.setItem(13, Utilities.ConstructItemStack(Material.PAPER, 1, 0, "§b§lDelay Interval Message", "§7Use §f%TIME% §7to insert time left.", "§7Use §f& §7for Color Codes.", "§cNote: §fthe GUI editor has a character cap.", "§fFor best results, edit this directly in the config.", "", "§f§l[ Click to Edit ]"));
-		editorInterface.setItem(14, Utilities.ConstructItemStack(Material.EMPTY_MAP, 1, 0, "§b§lDrop Start Message", "§7Use §f& §7for Color Codes.", "§cNote: §fthe GUI editor has a character cap.", "§fFor best results, edit this directly in the config.", "", "§f§l[ Click to Edit ]"));
-		editorInterface.setItem(16, Utilities.ConstructItemStack(Material.ICE, 1, 0, "§b§lDrop Party Cooldown", "§e<< §f" + chest.getDropCooldown() + " second(s) §e>>", "§7Starts counting down when lever is pulled.", "", "", "§f§l[ Click to Change ]"));
-		//editorInterface.setItem(16, Utilities.ConstructItemStack(Material.BOOK_AND_QUILL, 1, 0, "§8§lDeposit Blacklist", "§7These items cannot be deposited.", "", "", "§f§l[ Click to Edit ]"));
+		editorInterface.setItem(9, Utilities.ConstructItemStack(Material.WATCH, 1, 0, "§c§lDrop Party Delay", "§e<< §f" + chest.getDropDelay() + " second(s) §e>>", "§7Drop Party starts after this delay", "§7when the lever is pulled.", "", "§f§l[ Click to Change ]"));
+		editorInterface.setItem(10, Utilities.ConstructItemStack(Material.CHEST, 1, 0, "§6§lMinimum Drop Capacity", "§e<< §f" + chest.getMinSlots() + " items §e>>", "§7Drop Party cannot be started unless", "§7the chest has this many slots filled.", "", "§f§l[ Click to Change ]"));
+		editorInterface.setItem(11, Utilities.ConstructItemStack(Material.SIGN, 1, 0, "§a§lAnnouncement Delay", "§e<< §f" + (chest.getAnnounceInterval() > 0 ? chest.getAnnounceInterval() : "0 §c(disabled)") + " §e>>", "§7Repeatively announces the time remaining", "§7until Drop Party after this delay.", "§7Does nothing if §cDrop Party Delay§7 is 0.", "", "§f§l[ Click to Change ]"));
+		editorInterface.setItem(12, Utilities.ConstructItemStack(Material.PAPER, 1, 0, "§b§lDelay Interval Message", "§7Use §f%TIME% §7to insert time left.", "§7Use §f& §7for Color Codes.", "§cNote: §fthe GUI editor has a character cap.", "§fFor best results, edit this directly in the config.", "", "§f§l[ Click to Edit ]"));
+		editorInterface.setItem(13, Utilities.ConstructItemStack(Material.EMPTY_MAP, 1, 0, "§b§lDrop Start Message", "§7Use §f& §7for Color Codes.", "§cNote: §fthe GUI editor has a character cap.", "§fFor best results, edit this directly in the config.", "", "§f§l[ Click to Edit ]"));
 		
-		editorInterface.setItem(7, Utilities.ConstructItemStack(chest.isEnabled() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK, 1, 0, "§d§lEnabled?", "§e<< §f" + (chest.isEnabled() ? "§aEnabled!" : "§cDisabled.") + " §e>>", "", "§f§l[ Click to Toggle ]"));
-	}
+		editorInterface.setItem(14, Utilities.ConstructItemStack(Material.ICE, 1, 0, "§b§lDrop Party Cooldown", "§e<< §f" + chest.getDropCooldown() + " second(s) §e>>", "§7Starts counting down when lever is pulled.", "", "", "§f§l[ Click to Change ]"));
+		editorInterface.setItem(15, Utilities.ConstructItemStack(Material.DARK_OAK_DOOR_ITEM, 1, 0, "§6§lStack Unstackables", "§e<< " + (chest.stack() ? "§a" : "§c") + chest.stack() + " §e>>", "§7If enabled, unstackable items that are", "§7deposited will be stacked up to 64.", "", "§f§l[ Click to Toggle ]"));
+		editorInterface.setItem(6, Utilities.ConstructItemStack(Material.BOOK_AND_QUILL, 1, 0, "§8§m§lDeposit Blacklist", "§7§mThese items cannot be deposited.", "", "§e§lGUI COMING SOON!", "§f§m§l[ Click to Edit ]"));
+		
+		editorInterface.setItem(8, Utilities.ConstructItemStack(chest.isEnabled() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK, 1, 0, "§d§lEnabled?", "§e<< §f" + (chest.isEnabled() ? "§aEnabled!" : "§cDisabled.") + " §e>>", "", "§f§l[ Click to Toggle ]"));
+		}
 	
 	public void openInventory(Player p) {
 		update();
@@ -122,6 +142,11 @@ public class ChestEditor {
 		case "§5Party Chest Editor":
 			e.setCancelled(true);
 			switch (e.getCurrentItem().getType()) {
+			case NAME_TAG: // name
+				openAnvil(p, "Enter chest name");
+				addPlayerEditor(p, this);
+				thingy.put(p, AnvilEditor.NAME);
+				break;
 			case CAKE: // material
 				openAnvil(p, "Enter block type");
 				addPlayerEditor(p, this);
@@ -136,7 +161,7 @@ public class ChestEditor {
 				openHeightInterface(p);
 				break;
 			case LEVER: // cost
-				openAnvil(p, "Enter lever-pull cost");
+				openAnvil(p, "Space Separated Cost {money=[#] item=[MATERIAL:DATA:AMOUNT]}");
 				addPlayerEditor(p, this);
 				thingy.put(p, AnvilEditor.COST);
 				break;
@@ -176,10 +201,16 @@ public class ChestEditor {
 			/*case BOOK_AND_QUILL: // blacklist
 				openBlacklistInterface(p);
 				break;*/
+			case DARK_OAK_DOOR_ITEM:
+				chest.setStack(!chest.stack());
+				editorInterface.setItem(15, Utilities.ConstructItemStack(Material.DARK_OAK_DOOR_ITEM, 1, 0, "§e§lStack Unstackables", "§e<< " + (chest.stack() ? "§a" : "§c") + chest.stack() + " §e>>", "§7If enabled, unstackable items that are", "§7deposited will be stacked up to 64.", "", "§f§l[ Click to Toggle ]"));
+				break;
+			case NETHER_STAR: // particle
+				break;
 			case EMERALD_BLOCK:
 			case REDSTONE_BLOCK:
 				chest.setEnabled(!chest.isEnabled());
-				editorInterface.setItem(7, Utilities.ConstructItemStack(chest.isEnabled() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK, 1, 0, "§d§lEnabled?", "§e<< §f" + (chest.isEnabled() ? "§aEnabled!" : "§cDisabled.") + " §e>>", "", "§f§l[ Click to Toggle ]"));
+				editorInterface.setItem(8, Utilities.ConstructItemStack(chest.isEnabled() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK, 1, 0, "§d§lEnabled?", "§e<< §f" + (chest.isEnabled() ? "§aEnabled!" : "§cDisabled.") + " §e>>", "", "§f§l[ Click to Toggle ]"));
 				break;
 				default:
 					break;
@@ -290,6 +321,24 @@ public class ChestEditor {
 					e.setWillDestroy(true);
 					
 					switch (thingy.get(p)) {
+					case NAME:
+						if (e.getName() != null) {
+							try {
+								String s = e.getName();
+								if (PartyRoom.getPlugin().handler.getByName(s) != null) {
+									p.sendMessage(PartyRoom.PREFIX + "§cThere is already a chest with that name!");
+									p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+									return;
+								}
+								chest.setName(s);
+								p.sendMessage(PartyRoom.PREFIX + "§eParty Chest name §fset to: §e" + s + "§f!");
+								p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
+							} catch (Exception ex) {
+								p.sendMessage(PartyRoom.PREFIX + "§cInvalid string specified!");
+								p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+							}
+						}
+						break;
 					case MATERIAL:
 						if (e.getName() != null) {
 							try {
@@ -306,19 +355,13 @@ public class ChestEditor {
 					case COST:
 						if (e.getName() != null) {
 							try {
-								double dbt = Double.parseDouble(e.getName());
+								String s = e.getName();
+								chest.setCost(s);
 								
-								if (dbt < 0) {
-									p.sendMessage(PartyRoom.PREFIX + "§cWARNING: §fcost per pull was less than 0, so it is 0 now!");
-									dbt = 0;
-								}
-
-								chest.setCost(dbt);
-								
-								p.sendMessage(PartyRoom.PREFIX + "§fStarting a Drop Party now costs: §e$" + dbt + "§f!");
+								p.sendMessage(PartyRoom.PREFIX + "§fStarting a Drop Party now costs: §e$" + s + "§f!");
 								p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
 							} catch (Exception ex) {
-								p.sendMessage(PartyRoom.PREFIX + "§cInvalid lever-pull cost specified! §fPlease use whole numbers.");
+								p.sendMessage(PartyRoom.PREFIX + "§cInvalid lever-pull cost specified!");
 								p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
 							}
 						}

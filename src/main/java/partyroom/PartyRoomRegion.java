@@ -29,7 +29,7 @@ public class PartyRoomRegion {
 	}
 
 	public Location randomLocation() {
-		return new Location(world, xMin + Utilities.random(xV), yMin + Utilities.random(yV), zMin + Utilities.random(zV));
+		return new Location(world, xMin + Utilities.random(xV) + 0.5, yMin + Utilities.random(yV), zMin + Utilities.random(zV) + 0.5);
 	}
 	
 	public Location randomLocationConstrainY(YSpawnTarget target) {
@@ -49,7 +49,7 @@ public class PartyRoomRegion {
 			ycoord = 1 + (yMin - 1 + Utilities.random(yV));
 			break;
 		}
-		return new Location(world, xMin + Utilities.random(xV), ycoord, zMin + Utilities.random(zV));
+		return new Location(world, xMin + Utilities.random(xV) + 0.5, ycoord, zMin + Utilities.random(zV) + 0.5);
 	}
 	
 	@Override

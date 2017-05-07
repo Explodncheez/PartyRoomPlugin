@@ -19,13 +19,30 @@ public class PartyRoomHandler {
 	private Map<String, HashSet<String>> globalBlacklist = new HashMap<String, HashSet<String>>();
 	
 	private Map<String, PartyChest> PartyChests = new HashMap<String, PartyChest>();
+	private Map<String, PartyChest> Names = new HashMap<String, PartyChest>();
 	private Set<String> Balloons = new HashSet<String>();
+	
+	public PartyChest getByName(String name) {
+		return Names.get(name.toLowerCase());
+	}
+	
+	public void handleNameChange(String oldname, String newname, PartyChest pc) {
+		Names.remove(oldname);
+		Names.put(newname, pc);
+	}
+	
+	public int n() {
+		return PartyChests.size();
+	}
 	
 	public Map<String, HashSet<String>> getGlobalBlacklist() {
 		return globalBlacklist;
 	}
 	
 	public boolean isBlacklisted(ItemStack item, PartyChest chest) {
+		if (item == null)
+			return false;
+		
 		String itemdata = item.getType().toString() + "," + item.getDurability();
 		Map<String, HashSet<String>> mapToCheck = globalBlacklist.containsKey(itemdata) || globalBlacklist.containsKey(item.getType().toString()) ? globalBlacklist : chest.getBlacklist();
 		HashSet<String> blah = mapToCheck.containsKey(itemdata) ? mapToCheck.get(itemdata) : mapToCheck.get(item.getType().toString());
@@ -34,10 +51,12 @@ public class PartyRoomHandler {
 	
 	public void addPartyChest(PartyChest chest) {
 		PartyChests.put(chest.getChestString(), chest);
+		Names.put(chest.getName().toLowerCase(), chest);
 	}
 	
 	public void removePartyChest(PartyChest chest) {
 		PartyChests.remove(chest.getChestString());
+		Names.remove(chest.getName().toLowerCase());
 		ChestEditor.removeEditor(chest.getChestString());
 	}
 	
@@ -62,6 +81,7 @@ public class PartyRoomHandler {
 	}
 	
 	public void removeBalloon(Block b) {
+		b.removeMetadata("partyroom", PartyRoom.getPlugin());
 		Balloons.remove(Utilities.LocToString(b.getLocation()));
 	}
 	

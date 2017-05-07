@@ -32,6 +32,15 @@ public class Utilities {
 		return set;
 	}
 	
+	public static boolean isNum(Object o) {
+		try {
+			Double.parseDouble((String) o);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
 	public static int random(int range) {
 		return (int) (Math.random() * (range + 1));
 	}

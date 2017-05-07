@@ -1,12 +1,16 @@
 package partyroom;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -36,6 +40,9 @@ public class PartyRoom extends JavaPlugin {
 		plugin = this;
 		this.saveDefaultConfig();
 		config = this.getConfig();
+		updateConfig();
+		
+		ConfigMessages.load();
 		handler = new PartyRoomHandler();
 		
 		checkWorldGuard();
@@ -61,6 +68,21 @@ public class PartyRoom extends JavaPlugin {
 	public void onDisable() {
 		LoaderAndSaver.saveChests(config);
 		handler.removeBalloons();
+	}
+	
+	private void updateConfig() {
+		if (config.isSet("version")) {
+			switch (config.getInt("version")) {
+			case 1:
+				break;
+			}
+		} else {
+			config.set("version", 1);
+			Reader reader = new InputStreamReader(getResource("config.yml"));
+			config.createSection("messages", (Map<?, ?>) YamlConfiguration.loadConfiguration(reader).getConfigurationSection("messages").getValues(false));
+			saveConfig();
+			reloadConfig();
+		}
 	}
 	
 	public static PartyRoom getPlugin() {
@@ -105,8 +127,15 @@ public class PartyRoom extends JavaPlugin {
 	}
 	
 	private static void checkEconomy() {
-        RegisteredServiceProvider<Economy> economyProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        economy = economyProvider == null ? null : economyProvider.getProvider();
+		Plugin vault = plugin.getServer().getPluginManager().getPlugin("Vault");
+		if (vault == null) {
+			economy = null;
+			Bukkit.getLogger().info("[PARTYROOM] Vault is not installed, so economy settings won't work!");
+			return;
+		}
+		
+		RegisteredServiceProvider<Economy> economyProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+		economy = economyProvider == null ? null : economyProvider.getProvider();
     }
 
 }

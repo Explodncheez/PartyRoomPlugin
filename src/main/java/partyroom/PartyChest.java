@@ -491,7 +491,7 @@ public class PartyChest {
 		
 		Player p = (Player) e.getWhoClicked();
 		
-        if (previouslyCancelled) {
+        if (previouslyCancelled && !p.hasPermission("partyroom.bypass")) {
             p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_DEPOSIT_CANCELLED.getString(null));
             p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
             return false;

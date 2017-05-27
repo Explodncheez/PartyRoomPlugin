@@ -35,8 +35,8 @@ public class AnvilGUI_v1_9_R1 extends AnvilGUI {
     }
     
     public AnvilGUI_v1_9_R1(Player player, final AnvilClickEventHandler handler){
-    	super();
-    	
+        super();
+        
         this.player = player;
         this.handler = handler;
  
@@ -68,10 +68,10 @@ public class AnvilGUI_v1_9_R1 extends AnvilGUI {
                         handler.onAnvilClick(clickEvent);
  
                         if(clickEvent.getWillClose()){
-                        	ChestEditor ce = ChestEditor.get(clicker);
+                            ChestEditor ce = ChestEditor.get(clicker);
                             event.getWhoClicked().closeInventory();
-							ce.openInventory(clicker);
-							ChestEditor.addPlayerEditor(clicker, ce);
+                            ce.openInventory(clicker);
+                            ChestEditor.addPlayerEditor(clicker, ce);
                         }
  
                         if(clickEvent.getWillDestroy()){

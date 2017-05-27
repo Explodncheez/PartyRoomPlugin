@@ -16,39 +16,39 @@ import partyroom.PartyRoom;
 */
 public abstract class AnvilGUI {
 
-	private static Class<? extends AnvilGUI> clazz;
+    private static Class<? extends AnvilGUI> clazz;
 
-	static {
-	    switch (PartyRoom.VERSION) {
-	    case "v1_11_R1":
-	    	clazz = AnvilGUI_v1_11_R1.class;
-	    	break;
-	    case "v1_10_R1":
-	    	clazz = AnvilGUI_v1_10_R1.class;
-	    	break;
-	    case "v1_9_R2":
-	    	clazz = AnvilGUI_v1_9_R2.class;
-	    	break;
-	    case "v1_9_R1":
-	    	clazz = AnvilGUI_v1_9_R1.class;
-	    	break;
-	    case "v1_8_R3":
-	    	clazz = AnvilGUI_v1_8_R3.class;
-	    	break;
-	    	default:
-	    		Bukkit.getLogger().info("ERROR: Your server version is not compatible with PartyRoom!");
-	    		break;
-	    }
-	}
-	
-	public static AnvilGUI get(Player p, AnvilClickEventHandler handler) {
-		try {
-			return clazz.getDeclaredConstructor(Player.class, AnvilClickEventHandler.class).newInstance(p, handler);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+    static {
+        switch (PartyRoom.VERSION) {
+        case "v1_11_R1":
+            clazz = AnvilGUI_v1_11_R1.class;
+            break;
+        case "v1_10_R1":
+            clazz = AnvilGUI_v1_10_R1.class;
+            break;
+        case "v1_9_R2":
+            clazz = AnvilGUI_v1_9_R2.class;
+            break;
+        case "v1_9_R1":
+            clazz = AnvilGUI_v1_9_R1.class;
+            break;
+        case "v1_8_R3":
+            clazz = AnvilGUI_v1_8_R3.class;
+            break;
+            default:
+                Bukkit.getLogger().info("ERROR: Your server version is not compatible with PartyRoom!");
+                break;
+        }
+    }
+    
+    public static AnvilGUI get(Player p, AnvilClickEventHandler handler) {
+        try {
+            return clazz.getDeclaredConstructor(Player.class, AnvilClickEventHandler.class).newInstance(p, handler);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
  
     public enum AnvilSlot {
         INPUT_LEFT(0),

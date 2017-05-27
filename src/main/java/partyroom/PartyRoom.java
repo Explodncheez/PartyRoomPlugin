@@ -33,7 +33,7 @@ public class PartyRoom extends JavaPlugin {
 	
 	public PartyRoomHandler handler;
 	
-	public static final String PREFIX = "§5§lPartyRoom > §r";
+	public static final String PREFIX = "§6§lPartyRoom > §r";
 	
 	@Override
 	public void onEnable() {
@@ -116,6 +116,7 @@ public class PartyRoom extends JavaPlugin {
 		config = plugin.getConfig();
 		ConfigMessages.load();
         LoaderAndSaver.loadChests(config);
+        debug = config.getBoolean("debug");
 	}
 	
 	public static void debug(String message) {

@@ -161,7 +161,6 @@ public class PartyListener implements Listener {
 					//top inventory clicks
 					if (e.getRawSlot() < e.getView().getTopInventory().getSize()) {
 						if (e.getCursor().getType() != Material.AIR) {
-							e.setCancelled(true);
 							if (pc.depositItem(e, e.getCursor()))
 								e.setCursor(null);
 							return;

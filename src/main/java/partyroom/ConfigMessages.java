@@ -1,5 +1,7 @@
 package partyroom;
 
+import org.bukkit.ChatColor;
+
 public class ConfigMessages {
 	
 	public static void load() {
@@ -13,6 +15,7 @@ public class ConfigMessages {
 		WARN_DEPOSIT,
 		ATTEMPT_WITHDRAW_FAIL,
 		ATTEMPT_DEPOSIT_FAIL,
+		ATTEMPT_DEPOSIT_CANCELLED,
 		ATTEMPT_BLACKLIST_FAIL,
 		ATTEMPT_BLACKLIST_SUCCESS,
 		NOT_ENABLED,
@@ -25,7 +28,7 @@ public class ConfigMessages {
 		private String string;
 		
 		public void setString(String s) {
-			string = s;
+			string = ChatColor.translateAlternateColorCodes('&', s);
 		}
 		
 		public String getString(String var) {

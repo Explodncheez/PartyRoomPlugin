@@ -22,6 +22,14 @@ public class PartyRoomHandler {
 	private Map<String, PartyChest> Names = new HashMap<String, PartyChest>();
 	private Set<String> Balloons = new HashSet<String>();
 	
+	public void stopAll() {
+	    for (PartyChest chest : PartyChests.values()) {
+	        if (chest.isPulled()) {
+	            chest.forceStop();
+	        }
+	    }
+	}
+	
 	public PartyChest getByName(String name) {
 		return Names.get(name.toLowerCase());
 	}

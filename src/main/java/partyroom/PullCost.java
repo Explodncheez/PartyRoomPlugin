@@ -85,7 +85,9 @@ public class PullCost {
 			}
 		}
 		
-		p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_PAY_SUCCESS.getString(toReadableString()));
+		String payment = toReadableString();
+		if (!payment.isEmpty())
+		    p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_PAY_SUCCESS.getString(payment));
 		return true;
 	}
 	
@@ -97,7 +99,7 @@ public class PullCost {
 			s += i.getAmount() + " x " + i.getType().toString().toLowerCase().replace("_", " ") + ", ";
 		}
 		
-		return s.isEmpty() ? "nothing" : s.substring(0, s.length() - 2);
+		return s.isEmpty() ? "" : s.substring(0, s.length() - 2);
 	}
 	
 	@Override

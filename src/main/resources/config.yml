@@ -109,6 +109,7 @@ messages:
   warn-deposit: '&c&lWARNING: &fAnything you put in this chest &c&lCANNOT &fbe taken out!!'
   attempt-withdraw-fail: 'You can''t take items out of Party Chests!'
   attempt-deposit-fail: 'You do not have permission to deposit items!'
+  attempt-deposit-cancelled: 'This item may not be deposited!'
   attempt-blacklist-fail: 'This item may not be deposited here!'
   attempt-blacklist-success: 'WARN: that item is blacklisted!'
   not-enabled: 'This Party Chest is not enabled.'

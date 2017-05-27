@@ -18,6 +18,8 @@ import partyroom.PartyChest.YSpawnTarget;
 public class LoaderAndSaver {
 	
 	public static void loadChests(FileConfiguration config) {
+	    PartyRoom.getPlugin().handler.stopAll();
+	    
 		if (config.getConfigurationSection("party-chests") == null || config.getConfigurationSection("party-chests").getKeys(false) == null)
 			return;
 

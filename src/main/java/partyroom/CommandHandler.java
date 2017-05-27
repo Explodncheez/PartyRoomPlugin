@@ -47,11 +47,38 @@ public class CommandHandler implements CommandExecutor {
 		"§a/proom help: §fShow help text",
 		"§a/proom commands: §fShows this screen",
 		"§a/proom reload: §fReload data from config",
-		"§a/proom save: §fSave data to config"
+		"§a/proom save: §fSave data to config",
+        "§f§m================================",
+	};
+	
+	String[] perms = {
+	        "§f§m================================",
+	        "§2§lPermissions:",
+	        "§aproom.view §fAllows viewing of chest contents with §o/proom view. §eDefault: Everyone",
+            "§aproom.help §fAllows viewing of player instruction manual. §eDefault: Everyone",
+            "§aproom.pull §fAllows pulling of Party Chest levers. §eDefault: Everyone",
+            "§aproom.deposit §fAllows depositing of items into Party Chests. §eDefault: Everyone",
+	        "§aproom.create §fAllows creation and deletion of Party Chests. §cDefault: OP",
+	        "§aproom.withdraw §fAllows withdrawing from Party Chests. §cDefault: OP",
+	        "§aproom.commands §fAllows viewing of ALL PartyRoom commands. §cDefault: OP",
+            "§aproom.bypass §fAllows bypass of ALL item blacklists. §cDefault: OP",
+            "§f§m================================",
 	};
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command command, String cmd, String[] args) {
 		if (cmd.equalsIgnoreCase("proom")) {
+		    if (args.length == 0) {
+                if (!sender.hasPermission("partyroom.commands")) {
+                    sender.sendMessage(PartyRoom.PREFIX + "You do not have permission to view PartyRoom Commands!");
+                    if (sender instanceof Player) ((Player) sender).playSound(((Player) sender).getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+                    return true;
+                }
+                for (String helptext : commands) {
+                    sender.sendMessage(helptext);
+                }
+                return true;
+		    }
 			if (args.length > 0) {
 				String s = args[0];
 				if (s.equalsIgnoreCase("view") && sender instanceof Player) {
@@ -244,6 +271,17 @@ public class CommandHandler implements CommandExecutor {
 					}
 					return true;
 				}
+                if (s.equalsIgnoreCase("permissions") || s.equalsIgnoreCase("perms")) {
+                    if (!sender.hasPermission("partyroom.commands")) {
+                        sender.sendMessage(PartyRoom.PREFIX + "You do not have permission to view Permissions!");
+                        if (sender instanceof Player) ((Player) sender).playSound(((Player) sender).getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+                        return true;
+                    }
+                    for (String helptext : perms) {
+                        sender.sendMessage(helptext);
+                    }
+                    return true;
+                }
 				if (s.equalsIgnoreCase("debug") && sender.isOp()) {
 					PartyRoom.debug = !PartyRoom.debug;
 					sender.sendMessage(PartyRoom.PREFIX + "Debug Mode: " + PartyRoom.debug);

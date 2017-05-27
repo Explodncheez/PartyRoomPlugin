@@ -417,6 +417,7 @@ public class PartyChest {
 			delayed = true;
 			delayRunnable = new BukkitRunnable() {
 				int elapsedTime;
+				@Override
 				public void run() {
 					if (++elapsedTime > dropDelay) {
 						cancel();
@@ -446,6 +447,7 @@ public class PartyChest {
 			coolingdown = true;
 			time = System.currentTimeMillis();
 			coolingRunnable = new BukkitRunnable() {
+	            @Override
 				public void run() {
 					coolingdown = false;
 				}
@@ -453,7 +455,7 @@ public class PartyChest {
 		}
 		dpRunnable = new BukkitRunnable() {
 			int cycle = 0;
-			@SuppressWarnings("deprecation")
+			@Override
 			public void run() {
 				if (++cycle > amount) {
 					cancel();
@@ -482,11 +484,18 @@ public class PartyChest {
 	}
 	
 	public boolean depositItem(InventoryInteractEvent e, ItemStack item) {
+	    boolean previouslyCancelled = e.isCancelled();
 		e.setCancelled(true);
 		if (item == null || (e instanceof InventoryClickEvent && ((InventoryClickEvent) e).getClick() == ClickType.DOUBLE_CLICK))
 			return false;
 		
 		Player p = (Player) e.getWhoClicked();
+		
+        if (previouslyCancelled) {
+            p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_DEPOSIT_CANCELLED.getString(null));
+            p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+            return false;
+        }
 
 		if (!p.hasPermission("partyroom.deposit")) {
 			p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_DEPOSIT_FAIL.getString(null));

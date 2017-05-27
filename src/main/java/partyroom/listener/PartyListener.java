@@ -132,7 +132,7 @@ public class PartyListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onChestClicky(InventoryClickEvent e) {
 		if (e.getWhoClicked() instanceof Player) {
 			
@@ -175,6 +175,7 @@ public class PartyListener implements Listener {
 							}
 						}
 					} else {
+					    // depositing items
 						if (e.getAction() == InventoryAction.COLLECT_TO_CURSOR && e.getView().getTopInventory().contains(e.getCursor().getType())) {
 							if (!p.hasPermission("partyroom.withdraw")) {
 								e.setCancelled(true);

@@ -33,7 +33,7 @@ public class PartyRoom extends JavaPlugin {
 	
 	public PartyRoomHandler handler;
 	
-	public static final String PREFIX = ChatColor.GOLD + "" + ChatColor.BOLD + "PartyRoom > " + ChatColor.RESET;
+	public static final String PREFIX = "§5§lPartyRoom > §r";
 	
 	@Override
 	public void onEnable() {
@@ -74,7 +74,13 @@ public class PartyRoom extends JavaPlugin {
 		if (config.isSet("version")) {
 			switch (config.getInt("version")) {
 			case 1:
+			    config.set("messages.attempt-deposit-cancelled", "This item may not be deposited.");
+	            config.set("version", 2);
+			    saveConfig();
+			    reloadConfig();
 				break;
+			case 2:
+			    break;
 			}
 		} else {
 			config.set("version", 1);
@@ -108,6 +114,8 @@ public class PartyRoom extends JavaPlugin {
 	public static void reloadConfiguration() {
 		plugin.reloadConfig();
 		config = plugin.getConfig();
+		ConfigMessages.load();
+        LoaderAndSaver.loadChests(config);
 	}
 	
 	public static void debug(String message) {

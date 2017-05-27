@@ -54,14 +54,14 @@ public class CommandHandler implements CommandExecutor {
 	String[] perms = {
 	        "§f§m================================",
 	        "§2§lPermissions:",
-	        "§aproom.view §fAllows viewing of chest contents with §o/proom view.\n   §eDefault: Everyone",
-            "§aproom.help §fAllows viewing of player instruction manual.\n   §eDefault: Everyone",
-            "§aproom.pull §fAllows pulling of Party Chest levers.\n   §eDefault: Everyone",
-            "§aproom.deposit §fAllows depositing of items into Party Chests.\n   §eDefault: Everyone",
-	        "§aproom.create §fAllows creation and deletion of Party Chests.\n   §cDefault: OP",
-	        "§aproom.withdraw §fAllows withdrawing from Party Chests.\n   §cDefault: OP",
-	        "§aproom.commands §fAllows viewing of ALL PartyRoom commands.\n   §cDefault: OP",
-            "§aproom.bypass §fAllows bypass of ALL item blacklists.\n   §cDefault: OP",
+	        "§apartyroom.view §fAllows viewing of chest contents with §o/partyroom view.\n   §eDefault: Everyone",
+            "§apartyroom.help §fAllows viewing of player instruction manual.\n   §eDefault: Everyone",
+            "§apartyroom.pull §fAllows pulling of Party Chest levers.\n   §eDefault: Everyone",
+            "§apartyroom.deposit §fAllows depositing of items into Party Chests.\n   §eDefault: Everyone",
+	        "§apartyroom.create §fAllows creation and deletion of Party Chests.\n   §cDefault: OP",
+	        "§apartyroom.withdraw §fAllows withdrawing from Party Chests.\n   §cDefault: OP",
+	        "§apartyroom.commands §fAllows viewing of ALL PartyRoom commands.\n   §cDefault: OP",
+            "§apartyroom.bypass §fAllows bypass of ALL item blacklists.\n   §cDefault: OP",
             "§f§m================================",
 	};
 

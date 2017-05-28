@@ -80,6 +80,8 @@ public class PartyChest {
         }
     }
     
+    private Location location;
+    
     private String chestLocation, chestName;
     private PullCost pcost;
     private int radius, count;
@@ -95,6 +97,8 @@ public class PartyChest {
     
     private Map<String, HashSet<String>> blacklist;
     private ChestParticles particle;
+    
+    private Inventory proxy;
     
     private boolean stack, delayed, pulled, enabled, coolingdown;
     private long time;
@@ -119,7 +123,15 @@ public class PartyChest {
         this.minSlots = minSlots;
         this.announceMessage = announceMessage.replace("&", "§");
         this.startMessage = startMessage.replace("&", "§");
-        Block block = Utilities.StringToLoc(chestLocation).getBlock();
+        Block block = (this.location = Utilities.StringToLoc(chestLocation)).getBlock();
+        
+        try {
+            Inventory chestInv = ((Chest) block.getState()).getBlockInventory();
+            proxy = Bukkit.createInventory(null, chestInv.getSize(), this.chestName);
+            proxy.setContents(chestInv.getContents());
+        } catch (Exception e) {
+            Bukkit.getLogger().info("[PROOM] ERROR: Inventory binding for Party Chest at " + chestLocation + " failed!");
+        }
         
         this.particle = particles;
         
@@ -364,6 +376,7 @@ public class PartyChest {
             if (i.getAmount() > 1)
                 i.setAmount(Utilities.random(i.getAmount() - 1) + 1);
             chest.getBlockInventory().removeItem(i);
+            this.updateInventoryProxy();
             return i;
         }
         return null;
@@ -533,6 +546,7 @@ public class PartyChest {
                     p.getWorld().dropItem(p.getLocation(), ovf);
         }
         p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.4F, 0.7F);
+        this.updateInventoryProxy();
         return true;
     }
     
@@ -566,6 +580,14 @@ public class PartyChest {
             return 0;
         }
         return a;
+    }
+    
+    public void updateInventoryProxy() {
+        this.proxy.setContents(((Chest) location.getBlock().getState()).getBlockInventory().getContents());
+    }
+    
+    public void view(Player p) {
+        p.openInventory(this.proxy);
     }
     
     public void forceStart() {

@@ -154,7 +154,7 @@ public class PartyListener implements Listener {
             
             if (e.getView().getTopInventory().getHolder() instanceof Chest) {
                 Chest chest = (Chest) e.getView().getTopInventory().getHolder();
-                PartyChest pc = PartyRoom.getPlugin().handler.getPartyChest(Utilities.LocToString(chest.getLocation()));
+                final PartyChest pc = PartyRoom.getPlugin().handler.getPartyChest(Utilities.LocToString(chest.getLocation()));
                 
                 if (pc != null) {
 
@@ -171,6 +171,13 @@ public class PartyListener implements Listener {
                                 e.setCancelled(true);
                                 p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_WITHDRAW_FAIL.getString(null));
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+                            } else {
+                                new BukkitRunnable() {
+                                    @Override
+                                    public void run() {
+                                        pc.updateInventoryProxy();
+                                    }
+                                }.runTaskLater(PartyRoom.getPlugin(), 1L);
                             }
                         }
                     } else {
@@ -180,6 +187,13 @@ public class PartyListener implements Listener {
                                 e.setCancelled(true);
                                 p.sendMessage(PartyRoom.PREFIX + ConfigMessage.ATTEMPT_WITHDRAW_FAIL.getString(null));
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
+                            } else {
+                                new BukkitRunnable() {
+                                    @Override
+                                    public void run() {
+                                        pc.updateInventoryProxy();
+                                    }
+                                }.runTaskLater(PartyRoom.getPlugin(), 1L);
                             }
                         }
                         if (e.isShiftClick()) {

@@ -92,7 +92,7 @@ public class CommandHandler implements CommandExecutor {
                         String chestname = args[1].toLowerCase();
                         PartyChest chest = PartyRoom.getPlugin().handler.getByName(chestname);
                         if (chest != null) {
-                            p.openInventory(chest.getChest().getBlockInventory());
+                            chest.view(p);
                             ChestEditor.addViewer(p);
                         } else {
                             p.sendMessage(PartyRoom.PREFIX + "The §o" + args[1] + "§r party chest does not exist.");

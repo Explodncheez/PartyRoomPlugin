@@ -24,6 +24,6 @@ permissions:
     deposit:
       default: true
     view:
-      default: true;
+      default: true
     bypass:
       default: op

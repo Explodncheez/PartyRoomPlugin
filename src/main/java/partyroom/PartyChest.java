@@ -103,9 +103,9 @@ public class PartyChest {
     private boolean stack, delayed, pulled, enabled, coolingdown;
     private long time;
     
-    public PartyChest(String chest, String chestName, boolean stack, int ballooncount, Material blockType, byte blockData, PullCost pcost, RegionTarget rtarget, YSpawnTarget ytarget, int dropDelay, int dropCooldown, int announceDelay, int minSlots, String announceMessage, String startMessage, int radius, String region, boolean enabled, Map<String, HashSet<String>> blacklist, ChestParticles particles) {
+    public PartyChest(String chestLoc, String chestName, boolean stack, int ballooncount, Material blockType, byte blockData, PullCost pcost, RegionTarget rtarget, YSpawnTarget ytarget, int dropDelay, int dropCooldown, int announceDelay, int minSlots, String announceMessage, String startMessage, int radius, String region, boolean enabled, Map<String, HashSet<String>> blacklist, ChestParticles particles) {
         
-        this.chestLocation = chest;
+        this.chestLocation = chestLoc;
         this.pcost = pcost;
         this.rtarget = rtarget;
         this.ytarget = ytarget;
@@ -126,8 +126,9 @@ public class PartyChest {
         Block block = (this.location = Utilities.StringToLoc(chestLocation)).getBlock();
         
         try {
-            Inventory chestInv = ((Chest) block.getState()).getBlockInventory();
-            proxy = Bukkit.createInventory(null, chestInv.getSize(), this.chestName);
+            Chest chest = (Chest) block.getState();
+            Inventory chestInv = chest.getBlockInventory();
+            proxy = Bukkit.createInventory(null, chestInv.getSize(), chest.getCustomName() == null ? this.chestName : chest.getCustomName());
             proxy.setContents(chestInv.getContents());
         } catch (Exception e) {
             Bukkit.getLogger().info("[PROOM] ERROR: Inventory binding for Party Chest at " + chestLocation + " failed!");

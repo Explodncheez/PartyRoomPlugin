@@ -128,7 +128,7 @@ public class PartyChest {
         try {
             Chest chest = (Chest) block.getState();
             Inventory chestInv = chest.getBlockInventory();
-            proxy = Bukkit.createInventory(null, chestInv.getSize(), chest.getCustomName() == null ? this.chestName : chest.getCustomName());
+            proxy = Bukkit.createInventory(null, chestInv.getSize(), chest.getBlockInventory().getName() == null ? this.chestName : chest.getBlockInventory().getName());
             proxy.setContents(chestInv.getContents());
         } catch (Exception e) {
             Bukkit.getLogger().info("[PROOM] ERROR: Inventory binding for Party Chest at " + chestLocation + " failed!");

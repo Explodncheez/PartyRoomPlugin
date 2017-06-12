@@ -443,7 +443,7 @@ public class PartyChest {
                         }
                         return;
                     }
-                    if (announceDelay == 1 || elapsedTime % announceDelay == 1) {
+                    if (announceDelay == 1 || (announceDelay > 0 && elapsedTime % announceDelay == 1)) {
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             p.sendMessage(PartyRoom.PREFIX + getAnnounceMessage(dropDelay - elapsedTime + 1));
                         }

@@ -37,5 +37,6 @@
 	<classpathentry kind="lib" path="C:/Users/Me/Documents/Plugin Dependencies/spigot-spigot.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Me/Documents/Plugin Dependencies/spigot-spigot-1.9.4.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Me/Documents/Plugin Dependencies/Vault.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Me/Documents/Server 1.11/spigot2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

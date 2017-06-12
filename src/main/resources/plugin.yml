@@ -2,7 +2,7 @@ name: PartyRoom
 main: partyroom.PartyRoom
 author: Explodncheez
 description: Runescape-inspired Party Room system.
-version: 3.23
+version: 3.3
 softdepend: [WorldGuard, WorldEdit, Vault]
 
 commands:

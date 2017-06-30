@@ -55,7 +55,7 @@ public class LoaderAndSaver {
                 return;
             }
             
-            if (loc == null || !(loc.getBlock().getState() instanceof Chest)) {
+            if (loc == null || loc.getBlock() == null || !(loc.getBlock().getState() instanceof Chest)) {
                 Utilities.throwConsoleError(path + ". is an invalid entry as the block it points to is no longer a Single-Chest!");
                 return;
             }

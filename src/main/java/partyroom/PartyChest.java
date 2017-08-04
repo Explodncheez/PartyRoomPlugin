@@ -407,12 +407,10 @@ public class PartyChest {
         
         Chest chest = (Chest) Utilities.StringToLoc(chestLocation).getBlock().getState();
         List<Integer> filledSlots = Utilities.getFilledSlots(chest.getBlockInventory());
-        System.out.println("Filled Slots: " + filledSlots);
         
         // ratio of how full chest is to how many loons left to drop
         // higher number = drop items more urgently since we runnin out of loons
         float fillRatio = (float) filledSlots.size() / balloonsLeft;
-        System.out.println("Fill Ratio: " + fillRatio);
         ItemStack i = Math.random() * 0.8 <= fillRatio ?
                 chest.getBlockInventory().getContents()[filledSlots.get(Utilities.random(filledSlots.size() - 1))]
                         : null;

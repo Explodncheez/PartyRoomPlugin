@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -56,6 +57,16 @@ public class Utilities {
     public static Location StringToLoc(String s) {
         String[] ss = s.split(",");
         return new Location(Bukkit.getWorld(ss[0]), Integer.parseInt(ss[1]), Integer.parseInt(ss[2]), Integer.parseInt(ss[3]));
+    }
+    
+    public static List<Integer> getFilledSlots(Inventory i) {
+        List<Integer> list = new ArrayList<Integer>();
+        ItemStack[] contents = i.getContents();
+        for (int j = 0; j < contents.length; j++) {
+            if (contents[j] != null)
+                list.add(j);
+        }
+        return list;
     }
 
     public static ItemStack ConstructItemStack(Material mat, int amount, int durability, String displayName, String... lore) {

@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import partyroom.PartyChest.ChestParticles;
 import partyroom.PartyChest.RegionTarget;
 import partyroom.PartyChest.YSpawnTarget;
+import partyroom.PredicateItem.InvalidPredicateException;
 
 public class LoaderAndSaver {
     
@@ -27,7 +28,12 @@ public class LoaderAndSaver {
             try {
                 for (String s : config.getConfigurationSection("global-blacklist").getKeys(false)) {
                     
-                    PartyRoom.getPlugin().handler.getGlobalBlacklist().put(s.toUpperCase(), new HashSet<String>(config.getStringList("global-blacklist." + s)));
+                    try {
+                        PredicateItem predicate = new PredicateItem(s);
+                        PartyRoom.getPlugin().handler.getGlobalBlacklist().put(predicate, new HashSet<String>(config.getStringList("global-blacklist." + s)));
+                    } catch (InvalidPredicateException e) {
+                        Utilities.throwConsoleError("Item parsing failed in blacklist for value: §e" + s + "§f. Ignoring value.");
+                    }
                 }
             } catch (Exception e) {
                 Utilities.throwConsoleError("Invalid global blacklist§f. Ignoring value.");
@@ -46,7 +52,7 @@ public class LoaderAndSaver {
             RegionTarget target = RegionTarget.RADIUS;
             YSpawnTarget ytarget = YSpawnTarget.DEFAULT;
             
-            Map<String, HashSet<String>> blacklist = new HashMap<String, HashSet<String>>();
+            Map<PredicateItem, HashSet<String>> blacklist = new HashMap<>();
             
             try {
                 loc = Utilities.StringToLoc(path);
@@ -64,7 +70,7 @@ public class LoaderAndSaver {
                 name = c.isSet("name") ? c.getString("name") : "" + ((int) (Math.random() * 4800));
             } catch (Exception e) {
                 Utilities.throwConsoleError("Expected String in config at: §eparty-chests." + path + ".enabled§f. Using random number instead.");
-                name = "" + ((int) (Math.random() * 4800));
+                name = "" + ((int) (Math.random() * Integer.MAX_VALUE));
             }
             
             try {
@@ -179,7 +185,12 @@ public class LoaderAndSaver {
                 try {
                     for (String s : c.getConfigurationSection("blacklist").getKeys(false)) {
                         
-                        blacklist.put(s, new HashSet<String>(c.getStringList("blacklist." + s)));
+                        try {
+                            PredicateItem predicate = new PredicateItem(s);
+                            blacklist.put(predicate, new HashSet<String>(c.getStringList("blacklist." + s)));
+                        } catch (InvalidPredicateException e) {
+                            Utilities.throwConsoleError("Item parsing failed in blacklist for value: §e" + s + "§f. Ignoring value.");
+                        }
                     }
                 } catch (Exception e) {
                     Utilities.throwConsoleError("Invalid config at: §eparty-chests." + path + ".blacklist§f. Ignoring value.");
@@ -233,10 +244,10 @@ public class LoaderAndSaver {
         c.set("debug", PartyRoom.debug);
     }
     
-    private static Map<String, ArrayList<String>> a(Map<String, HashSet<String>> input) {
+    private static Map<String, ArrayList<String>> a(Map<PredicateItem, HashSet<String>> input) {
         Map<String, ArrayList<String>> a = new HashMap<String, ArrayList<String>>();
-        for (String m : input.keySet()) {
-            a.put(m, new ArrayList<String>(input.get(m)));
+        for (PredicateItem m : input.keySet()) {
+            a.put(m.toString(), new ArrayList<String>(input.get(m)));
         }
         return a;
     }

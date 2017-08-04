@@ -18,7 +18,7 @@ public class CommandHandler implements CommandExecutor {
     
     String[] help = {
         "§f§m================================",
-        "§6§l<<==>> §e§lParty Room v3.3 §6§l<<==>>",
+        "§6§l<<==>> §e§lParty Room v3.40 §6§l<<==>>",
         "",
         "§eInspired by §aRunescape's Falador Party Room§e!",
         "§fDeposit items into §bParty Chests§f and pull a §bLever",

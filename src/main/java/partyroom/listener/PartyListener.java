@@ -44,8 +44,11 @@ public class PartyListener implements Listener {
                 FallingBlock fb = (FallingBlock) e.getEntity();
                 block.setType(fb.getMaterial());
                 block.setData(fb.getBlockData());
-                block.setMetadata("partyroom", new FixedMetadataValue(PartyRoom.getPlugin(), e.getEntity().getMetadata("partyroom").get(0).asString()));
-                PartyRoom.getPlugin().handler.addBalloon(block);
+                String id = e.getEntity().getMetadata("partyroom").get(0).asString();
+                
+                PartyChest pchest = PartyRoom.getPlugin().handler.getPartyChest(id);
+                block.setMetadata("partyroom", new FixedMetadataValue(PartyRoom.getPlugin(), id));
+                PartyRoom.getPlugin().handler.addBalloon(pchest, block);
             }
         }
     }
@@ -66,7 +69,8 @@ public class PartyListener implements Listener {
                 if (loot != null)
                     new OwnedItemStack(loot, e.getPlayer()).drop(e.getClickedBlock().getLocation().add(0.5, 0.5, 0.5));
                 e.getClickedBlock().setType(Material.AIR);
-                PartyRoom.getPlugin().handler.removeBalloon(e.getClickedBlock());
+                PartyRoom.getPlugin().handler.removeBalloon(Pchest, e.getClickedBlock());
+                Pchest.removeBalloon(e.getClickedBlock().getLocation());
                 
             } else if (e.getClickedBlock().getType() == Material.LEVER && e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 
@@ -86,6 +90,7 @@ public class PartyListener implements Listener {
                         
                         final byte b = lever.getData();
                         new BukkitRunnable() {
+                            @Override
                             public void run() {
                                 lever.setData(b);
                             }

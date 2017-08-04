@@ -2,7 +2,9 @@ package partyroom;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,13 +22,13 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import partyroom.ConfigMessages.ConfigMessage;
-import partyroom.gui.ChestEditor;
-import partyroom.versions.SoundHandler.Sounds;
-
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import partyroom.ConfigMessages.ConfigMessage;
+import partyroom.gui.ChestEditor;
+import partyroom.versions.SoundHandler.Sounds;
 
 public class PartyChest {
     
@@ -95,15 +97,23 @@ public class PartyChest {
     private int dropDelay, dropCooldown, announceDelay, minSlots;
     private String announceMessage, startMessage;
     
-    private Map<String, HashSet<String>> blacklist;
+    private Map<PredicateItem, HashSet<String>> blacklist;
+    private Set<SimpleLoc> balloonLocs;
     private ChestParticles particle;
     
     private Inventory proxy;
     
     private boolean stack, delayed, pulled, enabled, coolingdown;
     private long time;
+    private int hash;
     
-    public PartyChest(String chestLoc, String chestName, boolean stack, int ballooncount, Material blockType, byte blockData, PullCost pcost, RegionTarget rtarget, YSpawnTarget ytarget, int dropDelay, int dropCooldown, int announceDelay, int minSlots, String announceMessage, String startMessage, int radius, String region, boolean enabled, Map<String, HashSet<String>> blacklist, ChestParticles particles) {
+    private Map<Integer, Integer> fill;
+    private int fillCount;
+    private int balloonsLeft;
+    private boolean willDropEverything;
+    private boolean canDropEverything;
+    
+    public PartyChest(String chestLoc, String chestName, boolean stack, int ballooncount, Material blockType, byte blockData, PullCost pcost, RegionTarget rtarget, YSpawnTarget ytarget, int dropDelay, int dropCooldown, int announceDelay, int minSlots, String announceMessage, String startMessage, int radius, String region, boolean enabled, Map<PredicateItem, HashSet<String>> blacklist, ChestParticles particles) {
         
         this.chestLocation = chestLoc;
         this.pcost = pcost;
@@ -114,7 +124,7 @@ public class PartyChest {
         this.pulled = false;
         this.enabled = enabled;
         this.dropCooldown = dropCooldown;
-        this.blacklist = blacklist == null ? new HashMap<String, HashSet<String>>() : blacklist;
+        this.blacklist = blacklist == null ? new HashMap<PredicateItem, HashSet<String>>() : blacklist;
         this.chestName = chestName;
         this.stack = stack;
         
@@ -148,7 +158,28 @@ public class PartyChest {
             }
         }
         
+        this.fill = new HashMap<>();
+        
         PartyRoom.getPlugin().handler.addPartyChest(this);
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof PartyChest))
+            return false;
+        
+        PartyChest pc = (PartyChest) other;
+        return pc.chestLocation.equals(this.chestLocation)
+                && pc.chestName.equals(this.chestName);
+    }
+    
+    @Override
+    public int hashCode() {
+        if (this.hash != 0)
+            return this.hash;
+        
+        int hash = this.location.hashCode();
+        return this.hash = hash;
     }
     
     public ChestParticles getEnumParticle() {
@@ -159,7 +190,7 @@ public class PartyChest {
         return particle == null ? "none" : particle.toString();
     }
     
-    public Map<String, HashSet<String>> getBlacklist() {
+    public Map<PredicateItem, HashSet<String>> getBlacklist() {
         return blacklist;
     }
     
@@ -369,17 +400,42 @@ public class PartyChest {
         }
     }
     
+    // TODO get random loot
     public ItemStack getRandomLoot() {
+        if (this.fillCount <= 0)
+            return null;
+        
         Chest chest = (Chest) Utilities.StringToLoc(chestLocation).getBlock().getState();
-        ItemStack i = chest.getBlockInventory().getContents()[Utilities.random(26)];
+        List<Integer> filledSlots = Utilities.getFilledSlots(chest.getBlockInventory());
+        System.out.println("Filled Slots: " + filledSlots);
+        
+        // ratio of how full chest is to how many loons left to drop
+        // higher number = drop items more urgently since we runnin out of loons
+        float fillRatio = (float) filledSlots.size() / balloonsLeft;
+        System.out.println("Fill Ratio: " + fillRatio);
+        ItemStack i = Math.random() * 0.8 <= fillRatio ?
+                chest.getBlockInventory().getContents()[filledSlots.get(Utilities.random(filledSlots.size() - 1))]
+                        : null;
+        
         if (i != null && i.getType() != Material.AIR) {
             i = i.clone();
-            if (i.getAmount() > 1)
-                i.setAmount(Utilities.random(i.getAmount() - 1) + 1);
+            // if false, we need to drop the entire stack or we run outta loons
+            if (i.getAmount() > 1 && filledSlots.size() < balloonsLeft) {
+                // bias the RNG towards stack size as loon count gets lower
+                int amt = i.getAmount();
+                int ramt = (int) ((Math.random() * (1 - fillRatio)) + (amt * fillRatio));
+                //amt *= Math.random() * (1 + fillRatio * fillRatio);
+                if (ramt < 1) ramt = 1;
+                else if (ramt > i.getAmount()) ramt = i.getAmount();
+                
+                i.setAmount(ramt);
+            }
             chest.getBlockInventory().removeItem(i);
             this.updateInventoryProxy();
+            --balloonsLeft;
             return i;
         }
+        --balloonsLeft;
         return null;
     }
     
@@ -421,6 +477,7 @@ public class PartyChest {
             return false;
 
         pulled = true;
+        balloonsLeft = count;
         PartyRoom.debug("Delaying drop party by " + dropDelay + " seconds...");
         delayedDrop(PRoom);
         return true;
@@ -455,8 +512,12 @@ public class PartyChest {
     }
     
     private void dropBalloons(final PartyRoomRegion p, final int amount) {
+        this.balloonLocs = new HashSet<>();
+        PartyRoom.getPlugin().handler.removeBalloons(this);
         PartyRoom.debug("Attempting to drop " + amount + " balloons in mode " + rtarget.toString() + "-" + ytarget.toString() + ": " + p.toString());
         final Chest chest = (Chest) Utilities.StringToLoc(chestLocation).getBlock().getState();
+        checkChestFill(chest);
+        
         if (dropCooldown > 0) {
             coolingdown = true;
             time = System.currentTimeMillis();
@@ -477,30 +538,48 @@ public class PartyChest {
                     return;
                 }
                 Location rloc = p.randomLocationConstrainY(ytarget);
-                rloc.getWorld().playSound(rloc, Sounds.ENTITY_CHICKEN_EGG.a(), 0.4F, 1.2F);
+                int j = 0;
+                // try to find a valid location to drop 5 times
+                while (j < 5 && (balloonLocs.contains(new SimpleLoc(rloc)) || rloc.getBlock().getType() != Material.AIR)) {
+                    rloc = p.randomLocationConstrainY(ytarget);
+                    ++j;
+                }
                 
-                if (rloc.getBlock().getType() == Material.AIR) {
-                    boolean b = false;;
-                    for (int i = 1; i <= rloc.getBlockY() - p.yMin(); i++) {
-                        if (rloc.getBlock().getRelative(0, -i, 0).getType().equals(blockType)) {
-                            b = true;
-                            break;
-                        }
-                    }
-                    if (!b) {
-                        PartyRoom.debug("Dropped balloon at " + Utilities.LocToString(rloc));
-                        FallingBlock fe = chest.getWorld().spawnFallingBlock(rloc, blockType, blockData);
-                        fe.setMetadata("partyroom", new FixedMetadataValue(PartyRoom.getPlugin(), chestLocation));
-                    }
+                if (rloc.getBlock().getType() == Material.AIR && balloonLocs.add(new SimpleLoc(rloc))) {
+                    rloc.getWorld().playSound(rloc, Sounds.ENTITY_CHICKEN_EGG.a(), 0.4F, 1.2F);
+                    
+                    PartyRoom.debug("Dropped balloon at " + Utilities.LocToString(rloc));
+                    FallingBlock fe = chest.getWorld().spawnFallingBlock(rloc, blockType, blockData);
+                    fe.setMetadata("partyroom", new FixedMetadataValue(PartyRoom.getPlugin(), chestLocation));
+                } else {
+                    PartyRoom.debug("Failed to drop balloon at " + Utilities.LocToString(rloc));
+                    --balloonsLeft;
                 }
             }
         }.runTaskTimer(PartyRoom.getPlugin(), 20L, 20L);
     }
     
+    public void removeBalloon(Location loc) {
+        balloonLocs.remove(new SimpleLoc(loc));
+    }
+    
+    private void checkChestFill(Chest chest) {
+        this.fill.clear();
+        this.fillCount = 0;
+        ItemStack[] arr = chest.getBlockInventory().getStorageContents();
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != null) {
+                this.fill.put(i, arr[i].getAmount());
+                ++this.fillCount;
+            }
+        }
+        this.canDropEverything = this.fillCount >= this.count;
+    }
+    
     public boolean depositItem(InventoryInteractEvent e, ItemStack item) {
         boolean previouslyCancelled = e.isCancelled();
         e.setCancelled(true);
-        if (item == null || (e instanceof InventoryClickEvent && ((InventoryClickEvent) e).getClick() == ClickType.DOUBLE_CLICK))
+        if (item == null || (e instanceof InventoryClickEvent && ((InventoryClickEvent) e).getClick() == ClickType.DOUBLE_CLICK) || e.getInventory().firstEmpty() == -1)
             return false;
         
         Player p = (Player) e.getWhoClicked();
@@ -551,9 +630,11 @@ public class PartyChest {
         return true;
     }
     
+    // returns overflow of adding an item in
     private int a(Inventory inv, ItemStack item) {
         int a = item.getAmount();
         int slot;
+        // we have an empty slot to put it in
         if (item.getAmount() == 64 && (slot = inv.firstEmpty()) > -1) {
             inv.setItem(slot, item);
             return 0;

@@ -16,14 +16,14 @@ import partyroom.gui.ChestEditor;
 
 public class PartyRoomHandler {
 
-    private Map<String, HashSet<String>> globalBlacklist = new HashMap<String, HashSet<String>>();
+    private Map<PredicateItem, HashSet<String>> globalBlacklist = new HashMap<>();
     
-    private Map<String, PartyChest> PartyChests = new HashMap<String, PartyChest>();
-    private Map<String, PartyChest> Names = new HashMap<String, PartyChest>();
-    private Set<String> Balloons = new HashSet<String>();
+    private Map<String, PartyChest> partyChests = new HashMap<>();
+    private Map<String, PartyChest> names = new HashMap<>();
+    private Map<PartyChest, Set<String>> balloons = new HashMap<>();
     
     public void stopAll() {
-        for (PartyChest chest : PartyChests.values()) {
+        for (PartyChest chest : partyChests.values()) {
             if (chest.isPulled()) {
                 chest.forceStop();
             }
@@ -31,72 +31,90 @@ public class PartyRoomHandler {
     }
     
     public PartyChest getByName(String name) {
-        return Names.get(name.toLowerCase());
+        return names.get(name.toLowerCase());
     }
     
     public void handleNameChange(String oldname, String newname, PartyChest pc) {
-        Names.remove(oldname);
-        Names.put(newname, pc);
+        names.remove(oldname);
+        names.put(newname, pc);
     }
     
     public int n() {
-        return PartyChests.size();
+        return partyChests.size();
     }
     
-    public Map<String, HashSet<String>> getGlobalBlacklist() {
+    public Map<PredicateItem, HashSet<String>> getGlobalBlacklist() {
         return globalBlacklist;
     }
     
     public boolean isBlacklisted(ItemStack item, PartyChest chest) {
         if (item == null)
             return false;
-        
-        String itemdata = item.getType().toString() + "," + item.getDurability();
-        Map<String, HashSet<String>> mapToCheck = globalBlacklist.containsKey(itemdata) || globalBlacklist.containsKey(item.getType().toString()) ? globalBlacklist : chest.getBlacklist();
+
+        PredicateItem itemdata = new PredicateItem(item);
+        Map<PredicateItem, HashSet<String>> mapToCheck = globalBlacklist.containsKey(itemdata) || globalBlacklist.containsKey(item.getType().toString()) ? globalBlacklist : chest.getBlacklist();
         HashSet<String> blah = mapToCheck.containsKey(itemdata) ? mapToCheck.get(itemdata) : mapToCheck.get(item.getType().toString());
         return blah != null && (blah.isEmpty() || item.getItemMeta().hasDisplayName() && blah.contains(item.getItemMeta().getDisplayName().replace("§", "&")));
     }
     
     public void addPartyChest(PartyChest chest) {
-        PartyChests.put(chest.getChestString(), chest);
-        Names.put(chest.getName().toLowerCase(), chest);
+        partyChests.put(chest.getChestString(), chest);
+        names.put(chest.getName().toLowerCase(), chest);
     }
     
     public void removePartyChest(PartyChest chest) {
-        PartyChests.remove(chest.getChestString());
-        Names.remove(chest.getName().toLowerCase());
+        partyChests.remove(chest.getChestString());
+        names.remove(chest.getName().toLowerCase());
         ChestEditor.removeEditor(chest.getChestString());
     }
     
     public PartyChest getPartyChest(String s) {
-        return PartyChests.get(s);
+        return partyChests.get(s);
     }
     
     public Collection<PartyChest> getPartyChests() {
-        return PartyChests.values();
+        return partyChests.values();
     }
     
     public boolean isPartyChest(Chest c) {
-        return PartyChests.containsKey(Utilities.LocToString(c.getLocation()));
+        return partyChests.containsKey(Utilities.LocToString(c.getLocation()));
     }
 
     public boolean isPartyChest(Block b) {
-        return b.getState() instanceof Chest && PartyChests.containsKey(Utilities.LocToString(b.getLocation()));
+        return b.getState() instanceof Chest && partyChests.containsKey(Utilities.LocToString(b.getLocation()));
     }
     
-    public void addBalloon(Block b) {
-        Balloons.add(Utilities.LocToString(b.getLocation()));
+    public void addBalloon(PartyChest owner, Block b) {
+        Set<String> set = balloons.get(owner);
+        if (set == null)
+            balloons.put(owner, set = new HashSet<String>());
+        set.add(Utilities.LocToString(b.getLocation()));
     }
     
-    public void removeBalloon(Block b) {
+    public void removeBalloon(PartyChest owner, Block b) {
         b.removeMetadata("partyroom", PartyRoom.getPlugin());
-        Balloons.remove(Utilities.LocToString(b.getLocation()));
+        Set<String> set = balloons.get(owner);
+        if (set != null)
+            set.remove(Utilities.LocToString(b.getLocation()));
+    }
+    
+    public void removeBalloons(PartyChest owner) {
+        Set<String> set = balloons.get(owner);
+        if (set != null)
+            for (String s : set) {
+                Block b = Utilities.StringToLoc(s).getBlock();
+                b.removeMetadata("partyroom", PartyRoom.getPlugin());
+                b.setType(Material.AIR);
+            }
     }
     
     public void removeBalloons() {
-        for (String s : Balloons) {
-            Utilities.StringToLoc(s).getBlock().setType(Material.AIR);
-        }
+        for (Set<String> set : balloons.values())
+            for (String s : set) {
+                Block b = Utilities.StringToLoc(s).getBlock();
+                b.removeMetadata("partyroom", PartyRoom.getPlugin());
+                b.setType(Material.AIR);
+            }
     }
     
     public PartyChest findChestForLever(Block lever) {
@@ -131,10 +149,10 @@ public class PartyRoomHandler {
     }
     
     public void clear() {
-        for (PartyChest chest : PartyChests.values()) {
+        for (PartyChest chest : partyChests.values()) {
             chest.forceStop();
         }
-        PartyChests.clear();
+        partyChests.clear();
     }
 
 }

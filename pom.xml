@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>random</groupId>
   <artifactId>PartyRoom</artifactId>
-  <version>3.40</version>
+  <version>3.41</version>
      <pluginRepositories>
        <pluginRepository>
            <id>bukkit-repo</id>

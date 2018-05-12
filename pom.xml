@@ -13,7 +13,7 @@
        <dependency>
            <groupId>org.bukkit</groupId>
            <artifactId>spigot</artifactId>
-           <version>1.12</version>
+           <version>1.12.2</version>
            <type>jar</type>
            <scope>provided</scope>
        </dependency>

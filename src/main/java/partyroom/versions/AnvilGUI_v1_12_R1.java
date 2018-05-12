@@ -27,9 +27,9 @@ public class AnvilGUI_v1_12_R1 extends AnvilGUI {
         public AnvilContainer(EntityHuman entity) {
             super(entity.inventory, entity.world, new BlockPosition(0, 0, 0), entity);
         }
- 
+
         @Override
-        public boolean a(EntityHuman entityhuman){
+        public boolean canUse(EntityHuman entityhuman){
             return true;
         }
     }

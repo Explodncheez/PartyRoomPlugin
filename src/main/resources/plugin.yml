@@ -4,6 +4,7 @@ author: Explodncheez
 description: Runescape-inspired Party Room system.
 version: 3.41
 softdepend: [WorldGuard, WorldEdit, Vault]
+api-version: 1.13
 
 commands:
   proom:

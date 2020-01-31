@@ -32,7 +32,7 @@ public class PartyRoom extends JavaPlugin {
     
     public PartyRoomHandler handler;
     
-    public static final String PREFIX = "§6§lPartyRoom > §r";
+    public static final String PREFIX = "Â§6Â§lPartyRoom > Â§r";
     
     @Override
     public void onEnable() {
@@ -120,7 +120,7 @@ public class PartyRoom extends JavaPlugin {
     
     public static void debug(String message) {
         if (debug)
-            Bukkit.getConsoleSender().sendMessage("§7[PartyRoom DEBUG] §r" + message);
+            Bukkit.getConsoleSender().sendMessage("Â§7[PartyRoom DEBUG] Â§r" + message);
     }
     
     private static void checkWorldGuard() {

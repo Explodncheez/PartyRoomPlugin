@@ -74,8 +74,8 @@ public class Utilities {
         ItemMeta meta = i.getItemMeta();
         List<String> loreList = new ArrayList<String>();
         for (String s : lore)
-            loreList.add(s.replace("&", "ง"));
-        meta.setDisplayName(displayName.replace("&", "ง"));
+            loreList.add(s.replace("&", "ยง"));
+        meta.setDisplayName(displayName.replace("&", "ยง"));
         meta.setLore(loreList);
         i.setItemMeta(meta);
         

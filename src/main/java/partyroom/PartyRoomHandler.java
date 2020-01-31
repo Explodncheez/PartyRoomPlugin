@@ -54,7 +54,7 @@ public class PartyRoomHandler {
         PredicateItem itemdata = new PredicateItem(item);
         Map<PredicateItem, HashSet<String>> mapToCheck = globalBlacklist.containsKey(itemdata) || globalBlacklist.containsKey(item.getType().toString()) ? globalBlacklist : chest.getBlacklist();
         HashSet<String> blah = mapToCheck.containsKey(itemdata) ? mapToCheck.get(itemdata) : mapToCheck.get(item.getType().toString());
-        return blah != null && (blah.isEmpty() || item.getItemMeta().hasDisplayName() && blah.contains(item.getItemMeta().getDisplayName().replace("ง", "&")));
+        return blah != null && (blah.isEmpty() || item.getItemMeta().hasDisplayName() && blah.contains(item.getItemMeta().getDisplayName().replace("ยง", "&")));
     }
     
     public void addPartyChest(PartyChest chest) {

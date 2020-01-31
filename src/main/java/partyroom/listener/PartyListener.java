@@ -43,7 +43,6 @@ public class PartyListener implements Listener {
             if (block.getType() == Material.AIR) {
                 FallingBlock fb = (FallingBlock) e.getEntity();
                 block.setType(fb.getMaterial());
-                block.setData(fb.getBlockData());
                 String id = e.getEntity().getMetadata("partyroom").get(0).asString();
                 
                 PartyChest pchest = PartyRoom.getPlugin().handler.getPartyChest(id);
@@ -62,7 +61,7 @@ public class PartyListener implements Listener {
                 e.setCancelled(true);
                 
                 PartyChest Pchest = PartyRoom.getPlugin().handler.getPartyChest(e.getClickedBlock().getMetadata("partyroom").get(0).asString());
-                e.getClickedBlock().getWorld().playEffect(e.getClickedBlock().getLocation().add(0.5, 0.5, 0.5), PartyRoom.isSpigot() ? Effect.EXPLOSION_LARGE : Effect.SMOKE, 0);
+                e.getClickedBlock().getWorld().playEffect(e.getClickedBlock().getLocation().add(0.5, 0.5, 0.5), PartyRoom.isSpigot() ? Effect.WITHER_BREAK_BLOCK : Effect.SMOKE, 0);
                 e.getPlayer().playSound(e.getClickedBlock().getLocation(), Sounds.ENTITY_CHICKEN_EGG.a(), 0.8F, 0.5F);
                 
                 ItemStack loot = Pchest.getRandomLoot();
@@ -92,7 +91,7 @@ public class PartyListener implements Listener {
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-                                lever.setData(b);
+                                lever.setType(Material.LEVER);
                             }
                         }.runTaskLater(PartyRoom.getPlugin(), 40L);
                         

@@ -44,10 +44,10 @@ public class PartyChest {
     }
     
     public enum YSpawnTarget {
-        DEFAULT(0, Utilities.ConstructItemStack(Material.ENDER_PEARL, 1, 0, "§c§lDEFAULT", "§7Spawns up to 8 blocks above the floor.")),
-        RANDOM(1, Utilities.ConstructItemStack(Material.EYE_OF_ENDER, 1, 0, "§c§lRANDOM", "§7Spawns at a random region height.")),
-        MIN(2, Utilities.ConstructItemStack(Material.SLIME_BALL, 1, 0, "§c§lMIN", "§7Spawns 1 block above the floor.")),
-        MAX(3, Utilities.ConstructItemStack(Material.MAGMA_CREAM, 1, 0, "§c§lMAX", "§7Spawns at region's highest possible Y coord."));
+        DEFAULT(0, Utilities.ConstructItemStack(Material.ENDER_PEARL, 1, 0, "Â§cÂ§lDEFAULT", "Â§7Spawns up to 8 blocks above the floor.")),
+        RANDOM(1, Utilities.ConstructItemStack(Material.ENDER_EYE, 1, 0, "Â§cÂ§lRANDOM", "Â§7Spawns at a random region height.")),
+        MIN(2, Utilities.ConstructItemStack(Material.SLIME_BALL, 1, 0, "Â§cÂ§lMIN", "Â§7Spawns 1 block above the floor.")),
+        MAX(3, Utilities.ConstructItemStack(Material.MAGMA_CREAM, 1, 0, "Â§cÂ§lMAX", "Â§7Spawns at region's highest possible Y coord."));
         
         private YSpawnTarget(int slot, ItemStack item) {
             this.slot = slot;
@@ -131,14 +131,14 @@ public class PartyChest {
         this.dropDelay = dropDelay;
         this.announceDelay = announceDelay;
         this.minSlots = minSlots;
-        this.announceMessage = announceMessage.replace("&", "§");
-        this.startMessage = startMessage.replace("&", "§");
+        this.announceMessage = announceMessage.replace("&", "Â§");
+        this.startMessage = startMessage.replace("&", "Â§");
         Block block = (this.location = Utilities.StringToLoc(chestLocation)).getBlock();
         
         try {
             Chest chest = (Chest) block.getState();
             Inventory chestInv = chest.getBlockInventory();
-            proxy = Bukkit.createInventory(null, chestInv.getSize(), chest.getBlockInventory().getName() == null ? this.chestName : chest.getBlockInventory().getName());
+            proxy = Bukkit.createInventory(null, chestInv.getSize(), chest.getCustomName() == null ? this.chestName : chest.getCustomName());
             proxy.setContents(chestInv.getContents());
         } catch (Exception e) {
             Bukkit.getLogger().info("[PROOM] ERROR: Inventory binding for Party Chest at " + chestLocation + " failed!");
@@ -153,7 +153,7 @@ public class PartyChest {
             if (PRegion instanceof ProtectedCuboidRegion) {
                 this.regionName = region;
             } else {
-                Utilities.throwConsoleError("PartyRoom Regions must be Cuboid and §c" + region + " §ris not!");
+                Utilities.throwConsoleError("PartyRoom Regions must be Cuboid and Â§c" + region + " Â§ris not!");
                 this.rtarget = RegionTarget.RADIUS;
             }
         }
@@ -268,11 +268,11 @@ public class PartyChest {
     }
     
     public void setAnnounceMessage(String s) {
-        announceMessage = s.replace("&", "§");
+        announceMessage = s.replace("&", "Â§");
     }
     
     public void setStartMessage(String s) {
-        startMessage = s.replace("&", "§");
+        startMessage = s.replace("&", "Â§");
     }
     
     public void setPulled(boolean pull) {
@@ -346,7 +346,7 @@ public class PartyChest {
             this.blockData = (byte) data;
         } else {
             Utilities.throwConsoleError(m.toString() + " is not a valid block!");
-            this.blockType = Material.CAKE_BLOCK;
+            this.blockType = Material.CAKE;
             this.blockData = 0;
         }
     }
@@ -450,7 +450,7 @@ public class PartyChest {
         
         if (coolingdown) {
             long t = (dropCooldown - (System.currentTimeMillis() - time) / 1000);
-            puller.sendMessage(PartyRoom.PREFIX + ConfigMessage.COOLING_DOWN.getString(t + " §fmore second" + (time == 1 ? "" : "s")));
+            puller.sendMessage(PartyRoom.PREFIX + ConfigMessage.COOLING_DOWN.getString(t + " Â§fmore second" + (time == 1 ? "" : "s")));
             return false;
         }
         

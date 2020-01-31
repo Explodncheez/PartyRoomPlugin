@@ -17,52 +17,52 @@ import partyroom.versions.SoundHandler.Sounds;
 public class CommandHandler implements CommandExecutor {
     
     String[] help = {
-        "§f§m================================",
-        "§6§l<<==>> §e§lParty Room v3.41 §6§l<<==>>",
+        "Â§fÂ§m================================",
+        "Â§6Â§l<<==>> Â§eÂ§lParty Room v3.41 Â§6Â§l<<==>>",
         "",
-        "§eInspired by §aRunescape's Falador Party Room§e!",
-        "§fDeposit items into §bParty Chests§f and pull a §bLever",
-        "§fwithin 1 block of the chest to start a §bBalloon Drop§f!",
-        "§fWhen popped, balloons may contain items from the",
-        "§fChest! Any items from balloons can only be picked",
-        "§fup by the person who popped them for 60 seconds.",
+        "Â§eInspired by Â§aRunescape's Falador Party RoomÂ§e!",
+        "Â§fDeposit items into Â§bParty ChestsÂ§f and pull a Â§bLever",
+        "Â§fwithin 1 block of the chest to start a Â§bBalloon DropÂ§f!",
+        "Â§fWhen popped, balloons may contain items from the",
+        "Â§fChest! Any items from balloons can only be picked",
+        "Â§fup by the person who popped them for 60 seconds.",
         "",
-        "§c§lWarning: §rAny items put into the Chest §c§lCANNOT",
-        "§fbe withdrawn again! Be careful what you click!",
-        "§f§m================================"
+        "Â§cÂ§lWarning: Â§rAny items put into the Chest Â§cÂ§lCANNOT",
+        "Â§fbe withdrawn again! Be careful what you click!",
+        "Â§fÂ§m================================"
     };
     
     String[] commands = {
-        "§f§m================================",
-        "§2§lCommands:",
-        "§a/proom view {name}: §fView a party chest",
-        "§a/proom create: §fUse when looking at any",
-        "§f§lsingle chest §rto create a Party Chest.",
-        "§a/proom remove: §fUse when looking at any",
+        "Â§fÂ§m================================",
+        "Â§2Â§lCommands:",
+        "Â§a/proom view {name}: Â§fView a party chest",
+        "Â§a/proom create: Â§fUse when looking at any",
+        "Â§fÂ§lsingle chest Â§rto create a Party Chest.",
+        "Â§a/proom remove: Â§fUse when looking at any",
         "Party Chest to remove it.",
-        "§a/proom stop: §fImmediately end balloon",
-        "§fdrop of Party Chest you are looking at.",
-        "§a/proom start: §fImmediately start balloon",
-        "§fdrop of Party Chest you are looking at.",
-        "§a/proom help: §fShow help text",
-        "§a/proom commands: §fShows this screen",
-        "§a/proom reload: §fReload data from config",
-        "§a/proom save: §fSave data to config",
-        "§f§m================================",
+        "Â§a/proom stop: Â§fImmediately end balloon",
+        "Â§fdrop of Party Chest you are looking at.",
+        "Â§a/proom start: Â§fImmediately start balloon",
+        "Â§fdrop of Party Chest you are looking at.",
+        "Â§a/proom help: Â§fShow help text",
+        "Â§a/proom commands: Â§fShows this screen",
+        "Â§a/proom reload: Â§fReload data from config",
+        "Â§a/proom save: Â§fSave data to config",
+        "Â§fÂ§m================================",
     };
     
     String[] perms = {
-            "§f§m================================",
-            "§2§lPermissions:",
-            "§apartyroom.view §fAllows viewing of chest contents with §o/partyroom view.\n   §eDefault: Everyone",
-            "§apartyroom.help §fAllows viewing of player instruction manual.\n   §eDefault: Everyone",
-            "§apartyroom.pull §fAllows pulling of Party Chest levers.\n   §eDefault: Everyone",
-            "§apartyroom.deposit §fAllows depositing of items into Party Chests.\n   §eDefault: Everyone",
-            "§apartyroom.create §fAllows creation and deletion of Party Chests.\n   §cDefault: OP",
-            "§apartyroom.withdraw §fAllows withdrawing from Party Chests.\n   §cDefault: OP",
-            "§apartyroom.commands §fAllows viewing of ALL PartyRoom commands.\n   §cDefault: OP",
-            "§apartyroom.bypass §fAllows bypass of ALL item blacklists.\n   §cDefault: OP",
-            "§f§m================================",
+            "Â§fÂ§m================================",
+            "Â§2Â§lPermissions:",
+            "Â§apartyroom.view Â§fAllows viewing of chest contents with Â§o/partyroom view.\n   Â§eDefault: Everyone",
+            "Â§apartyroom.help Â§fAllows viewing of player instruction manual.\n   Â§eDefault: Everyone",
+            "Â§apartyroom.pull Â§fAllows pulling of Party Chest levers.\n   Â§eDefault: Everyone",
+            "Â§apartyroom.deposit Â§fAllows depositing of items into Party Chests.\n   Â§eDefault: Everyone",
+            "Â§apartyroom.create Â§fAllows creation and deletion of Party Chests.\n   Â§cDefault: OP",
+            "Â§apartyroom.withdraw Â§fAllows withdrawing from Party Chests.\n   Â§cDefault: OP",
+            "Â§apartyroom.commands Â§fAllows viewing of ALL PartyRoom commands.\n   Â§cDefault: OP",
+            "Â§apartyroom.bypass Â§fAllows bypass of ALL item blacklists.\n   Â§cDefault: OP",
+            "Â§fÂ§m================================",
     };
 
     @Override
@@ -95,12 +95,12 @@ public class CommandHandler implements CommandExecutor {
                             chest.view(p);
                             ChestEditor.addViewer(p);
                         } else {
-                            p.sendMessage(PartyRoom.PREFIX + "The §o" + args[1] + "§r party chest does not exist.");
+                            p.sendMessage(PartyRoom.PREFIX + "The Â§o" + args[1] + "Â§r party chest does not exist.");
                             p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             return true;
                         }
                     } else {
-                        p.sendMessage(PartyRoom.PREFIX + "No chest specified. Use as §o/proom view [chestName]");
+                        p.sendMessage(PartyRoom.PREFIX + "No chest specified. Use as Â§o/proom view [chestName]");
                         p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                         return true;
                     }
@@ -122,10 +122,10 @@ public class CommandHandler implements CommandExecutor {
                         Chest chest = (Chest) block.getState();
                         if (!PartyRoom.getPlugin().handler.isPartyChest(chest)) {
                             int id = PartyRoom.getPlugin().handler.n();
-                            new PartyChest(Utilities.LocToString(chest.getLocation()), "" + id, false, 20, Material.CAKE_BLOCK, (byte) 0, new PullCost(), RegionTarget.RADIUS, YSpawnTarget.DEFAULT, 0, 0, 0, 0, "&6Drop Party will start in &e%TIME%&6!", "§6Drop Party has started!", 10, "", false, null, null);
+                            new PartyChest(Utilities.LocToString(chest.getLocation()), "" + id, false, 20, Material.CAKE, (byte) 0, new PullCost(), RegionTarget.RADIUS, YSpawnTarget.DEFAULT, 0, 0, 0, 0, "&6Drop Party will start in &e%TIME%&6!", "Â§6Drop Party has started!", 10, "", false, null, null);
                             LoaderAndSaver.saveChests(PartyRoom.getConfiguration());
-                            p.sendMessage(PartyRoom.PREFIX + "§eTurned that Chest into a Party Chest with id: " + id + "!");
-                            p.sendMessage(PartyRoom.PREFIX + "Edit it in §eplugin config §for via §eSneak+RightClick§f.");
+                            p.sendMessage(PartyRoom.PREFIX + "Â§eTurned that Chest into a Party Chest with id: " + id + "!");
+                            p.sendMessage(PartyRoom.PREFIX + "Edit it in Â§eplugin config Â§for via Â§eSneak+RightClickÂ§f.");
                             p.sendMessage(PartyRoom.PREFIX + "Don't forget to place a Lever near the Chest!");
                             p.playSound(p.getLocation(), Sounds.ENTITY_PLAYER_LEVELUP.a(), 0.4F, 1.4F);
                         } else {
@@ -133,7 +133,7 @@ public class CommandHandler implements CommandExecutor {
                             p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                         }
                     } else {
-                        p.sendMessage(PartyRoom.PREFIX + "Look at any Single-Chest and use §e/proom create§f to create a Party Chest!");
+                        p.sendMessage(PartyRoom.PREFIX + "Look at any Single-Chest and use Â§e/proom createÂ§f to create a Party Chest!");
                         p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                     }
                     return true;
@@ -246,7 +246,7 @@ public class CommandHandler implements CommandExecutor {
                             return true;
                         }
                     }
-                    sender.sendMessage(PartyRoom.PREFIX + "Proper usage: §o/proom clear [name]");
+                    sender.sendMessage(PartyRoom.PREFIX + "Proper usage: Â§o/proom clear [name]");
                     return true;
                 }
                 if (s.equalsIgnoreCase("help")) {

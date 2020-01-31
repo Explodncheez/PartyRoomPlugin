@@ -96,7 +96,7 @@ public class ChestEditor {
         this.chest = chest;
         thingy = new WeakHashMap<Player, AnvilEditor>();
         Editors.put(chest.getChestString(), this);
-        editorInterface = Bukkit.createInventory(null, 18, "§5Party Chest Editor");
+        editorInterface = Bukkit.createInventory(null, 18, "Â§5Party Chest Editor");
         update();
     }
     
@@ -105,24 +105,24 @@ public class ChestEditor {
     private Map<Player, AnvilEditor> thingy;
     
     private void update() {
-        editorInterface.setItem(0, Utilities.ConstructItemStack(Material.NAME_TAG, 1, 0, "§a§lParty Chest Name", "§e<< §f" + chest.getName() + " §e>>", "", "", "§f§l[ Click to Change ]"));
-        editorInterface.setItem(1, Utilities.ConstructItemStack(Material.CAKE, 1, 0, "§a§lBalloon Block Type", "§e<< §f" + chest.getBlockMaterial().toString().toLowerCase() + " §e>>", "", "§f§l[ Click to Change ]"));
-        editorInterface.setItem(2, Utilities.ConstructItemStack(Material.MELON_SEEDS, 1, 0, "§b§lBalloon Count", "§e<< §f" + chest.getCount() + " §e>>", "", "§f§l[ Click to Change ]"));
-        editorInterface.setItem(3, Utilities.ConstructItemStack(Material.FEATHER, 1, 0, "§c§lBalloon Height", "§e<< §f" + chest.getYTarget().toString() + " Region Y-coord §e>>", chest.getYTarget().getDescription(), "", "§f§l[ Click to Change ]"));
-        editorInterface.setItem(4, Utilities.ConstructItemStack(Material.LEVER, 1, 0, "§6§lLever-Pull Cost", "§e<< §f$" + chest.getCost() + " §e>>", "", "§f§l[ Click to Change ]"));
-        editorInterface.setItem(5, Utilities.ConstructItemStack(Material.FLINT, 1, 0, "§c§lRegion Type", "§e<< §f" + chest.getRegionTarget().toString().toLowerCase() + " §e>>", chest.getRegionTarget() == RegionTarget.RADIUS ? "§eRadius: " + chest.getRadius() : "§eRegion: " + chest.getRegion(), "", "§f§l[ Click to Change ]"));
+        editorInterface.setItem(0, Utilities.ConstructItemStack(Material.NAME_TAG, 1, 0, "Â§aÂ§lParty Chest Name", "Â§e<< Â§f" + chest.getName() + " Â§e>>", "", "", "Â§fÂ§l[ Click to Change ]"));
+        editorInterface.setItem(1, Utilities.ConstructItemStack(Material.CAKE, 1, 0, "Â§aÂ§lBalloon Block Type", "Â§e<< Â§f" + chest.getBlockMaterial().toString().toLowerCase() + " Â§e>>", "", "Â§fÂ§l[ Click to Change ]"));
+        editorInterface.setItem(2, Utilities.ConstructItemStack(Material.MELON_SEEDS, 1, 0, "Â§bÂ§lBalloon Count", "Â§e<< Â§f" + chest.getCount() + " Â§e>>", "", "Â§fÂ§l[ Click to Change ]"));
+        editorInterface.setItem(3, Utilities.ConstructItemStack(Material.FEATHER, 1, 0, "Â§cÂ§lBalloon Height", "Â§e<< Â§f" + chest.getYTarget().toString() + " Region Y-coord Â§e>>", chest.getYTarget().getDescription(), "", "Â§fÂ§l[ Click to Change ]"));
+        editorInterface.setItem(4, Utilities.ConstructItemStack(Material.LEVER, 1, 0, "Â§6Â§lLever-Pull Cost", "Â§e<< Â§f$" + chest.getCost() + " Â§e>>", "", "Â§fÂ§l[ Click to Change ]"));
+        editorInterface.setItem(5, Utilities.ConstructItemStack(Material.FLINT, 1, 0, "Â§cÂ§lRegion Type", "Â§e<< Â§f" + chest.getRegionTarget().toString().toLowerCase() + " Â§e>>", chest.getRegionTarget() == RegionTarget.RADIUS ? "Â§eRadius: " + chest.getRadius() : "Â§eRegion: " + chest.getRegion(), "", "Â§fÂ§l[ Click to Change ]"));
         
-        editorInterface.setItem(9, Utilities.ConstructItemStack(Material.WATCH, 1, 0, "§c§lDrop Party Delay", "§e<< §f" + chest.getDropDelay() + " second(s) §e>>", "§7Drop Party starts after this delay", "§7when the lever is pulled.", "", "§f§l[ Click to Change ]"));
-        editorInterface.setItem(10, Utilities.ConstructItemStack(Material.CHEST, 1, 0, "§6§lMinimum Drop Capacity", "§e<< §f" + chest.getMinSlots() + " items §e>>", "§7Drop Party cannot be started unless", "§7the chest has this many slots filled.", "", "§f§l[ Click to Change ]"));
-        editorInterface.setItem(11, Utilities.ConstructItemStack(Material.SIGN, 1, 0, "§a§lAnnouncement Delay", "§e<< §f" + (chest.getAnnounceInterval() > 0 ? chest.getAnnounceInterval() : "0 §c(disabled)") + " §e>>", "§7Repeatively announces the time remaining", "§7until Drop Party after this delay.", "§7Does nothing if §cDrop Party Delay§7 is 0.", "", "§f§l[ Click to Change ]"));
-        editorInterface.setItem(12, Utilities.ConstructItemStack(Material.PAPER, 1, 0, "§b§lDelay Interval Message", "§7Use §f%TIME% §7to insert time left.", "§7Use §f& §7for Color Codes.", "§cNote: §fthe GUI editor has a character cap.", "§fFor best results, edit this directly in the config.", "", "§f§l[ Click to Edit ]"));
-        editorInterface.setItem(13, Utilities.ConstructItemStack(Material.EMPTY_MAP, 1, 0, "§b§lDrop Start Message", "§7Use §f& §7for Color Codes.", "§cNote: §fthe GUI editor has a character cap.", "§fFor best results, edit this directly in the config.", "", "§f§l[ Click to Edit ]"));
+        editorInterface.setItem(9, Utilities.ConstructItemStack(Material.CLOCK, 1, 0, "Â§cÂ§lDrop Party Delay", "Â§e<< Â§f" + chest.getDropDelay() + " second(s) Â§e>>", "Â§7Drop Party starts after this delay", "Â§7when the lever is pulled.", "", "Â§fÂ§l[ Click to Change ]"));
+        editorInterface.setItem(10, Utilities.ConstructItemStack(Material.CHEST, 1, 0, "Â§6Â§lMinimum Drop Capacity", "Â§e<< Â§f" + chest.getMinSlots() + " items Â§e>>", "Â§7Drop Party cannot be started unless", "Â§7the chest has this many slots filled.", "", "Â§fÂ§l[ Click to Change ]"));
+        editorInterface.setItem(11, Utilities.ConstructItemStack(Material.OAK_SIGN, 1, 0, "Â§aÂ§lAnnouncement Delay", "Â§e<< Â§f" + (chest.getAnnounceInterval() > 0 ? chest.getAnnounceInterval() : "0 Â§c(disabled)") + " Â§e>>", "Â§7Repeatively announces the time remaining", "Â§7until Drop Party after this delay.", "Â§7Does nothing if Â§cDrop Party DelayÂ§7 is 0.", "", "Â§fÂ§l[ Click to Change ]"));
+        editorInterface.setItem(12, Utilities.ConstructItemStack(Material.PAPER, 1, 0, "Â§bÂ§lDelay Interval Message", "Â§7Use Â§f%TIME% Â§7to insert time left.", "Â§7Use Â§f& Â§7for Color Codes.", "Â§cNote: Â§fthe GUI editor has a character cap.", "Â§fFor best results, edit this directly in the config.", "", "Â§fÂ§l[ Click to Edit ]"));
+        editorInterface.setItem(13, Utilities.ConstructItemStack(Material.MAP, 1, 0, "Â§bÂ§lDrop Start Message", "Â§7Use Â§f& Â§7for Color Codes.", "Â§cNote: Â§fthe GUI editor has a character cap.", "Â§fFor best results, edit this directly in the config.", "", "Â§fÂ§l[ Click to Edit ]"));
         
-        editorInterface.setItem(14, Utilities.ConstructItemStack(Material.ICE, 1, 0, "§b§lDrop Party Cooldown", "§e<< §f" + chest.getDropCooldown() + " second(s) §e>>", "§7Starts counting down when lever is pulled.", "", "", "§f§l[ Click to Change ]"));
-        editorInterface.setItem(15, Utilities.ConstructItemStack(Material.DARK_OAK_DOOR_ITEM, 1, 0, "§6§lStack Unstackables", "§e<< " + (chest.stack() ? "§a" : "§c") + chest.stack() + " §e>>", "§7If enabled, unstackable items that are", "§7deposited will be stacked up to 64.", "", "§f§l[ Click to Toggle ]"));
-        editorInterface.setItem(6, Utilities.ConstructItemStack(Material.BOOK_AND_QUILL, 1, 0, "§8§m§lDeposit Blacklist", "§7§mThese items cannot be deposited.", "", "§e§lGUI COMING SOON!", "§f§m§l[ Click to Edit ]"));
+        editorInterface.setItem(14, Utilities.ConstructItemStack(Material.ICE, 1, 0, "Â§bÂ§lDrop Party Cooldown", "Â§e<< Â§f" + chest.getDropCooldown() + " second(s) Â§e>>", "Â§7Starts counting down when lever is pulled.", "", "", "Â§fÂ§l[ Click to Change ]"));
+        editorInterface.setItem(15, Utilities.ConstructItemStack(Material.DARK_OAK_DOOR, 1, 0, "Â§6Â§lStack Unstackables", "Â§e<< " + (chest.stack() ? "Â§a" : "Â§c") + chest.stack() + " Â§e>>", "Â§7If enabled, unstackable items that are", "Â§7deposited will be stacked up to 64.", "", "Â§fÂ§l[ Click to Toggle ]"));
+        editorInterface.setItem(6, Utilities.ConstructItemStack(Material.WRITABLE_BOOK, 1, 0, "Â§8Â§mÂ§lDeposit Blacklist", "Â§7Â§mThese items cannot be deposited.", "", "Â§eÂ§lGUI COMING SOON!", "Â§fÂ§mÂ§l[ Click to Edit ]"));
         
-        editorInterface.setItem(8, Utilities.ConstructItemStack(chest.isEnabled() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK, 1, 0, "§d§lEnabled?", "§e<< §f" + (chest.isEnabled() ? "§aEnabled!" : "§cDisabled.") + " §e>>", "", "§f§l[ Click to Toggle ]"));
+        editorInterface.setItem(8, Utilities.ConstructItemStack(chest.isEnabled() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK, 1, 0, "Â§dÂ§lEnabled?", "Â§e<< Â§f" + (chest.isEnabled() ? "Â§aEnabled!" : "Â§cDisabled.") + " Â§e>>", "", "Â§fÂ§l[ Click to Toggle ]"));
         }
     
     public void openInventory(Player p) {
@@ -138,8 +138,8 @@ public class ChestEditor {
         if (e.getCurrentItem() == null || e.getInventory() != e.getView().getTopInventory())
             return;
         
-        switch (top.getName()) {
-        case "§5Party Chest Editor":
+        switch (e.getView().getTitle()) {
+        case "Â§5Party Chest Editor":
             e.setCancelled(true);
             switch (e.getCurrentItem().getType()) {
             case NAME_TAG: // name
@@ -168,7 +168,7 @@ public class ChestEditor {
             case FLINT:
                 openRegionInterface(p);
                 break;
-            case WATCH: // dp delay
+            case CLOCK: // dp delay
                 openAnvil(p, "Enter Drop Delay");
                 addPlayerEditor(p, this);
                 thingy.put(p, AnvilEditor.DROP_DELAY);
@@ -178,7 +178,7 @@ public class ChestEditor {
                 addPlayerEditor(p, this);
                 thingy.put(p, AnvilEditor.DROP_CAPACITY);
                 break;
-            case SIGN: // announce delay
+            case OAK_SIGN: // announce delay
                 openAnvil(p, "Enter Announce Interval");
                 addPlayerEditor(p, this);
                 thingy.put(p, AnvilEditor.ANNOUNCE_DELAY);
@@ -188,7 +188,7 @@ public class ChestEditor {
                 addPlayerEditor(p, this);
                 thingy.put(p, AnvilEditor.DELAY_MESSAGE);
                 break;
-            case EMPTY_MAP: // dp start message
+            case MAP: // dp start message
                 openAnvil(p, "Enter Party-Start Message");
                 addPlayerEditor(p, this);
                 thingy.put(p, AnvilEditor.START_MESSAGE);
@@ -201,22 +201,22 @@ public class ChestEditor {
             /*case BOOK_AND_QUILL: // blacklist
                 openBlacklistInterface(p);
                 break;*/
-            case DARK_OAK_DOOR_ITEM:
+            case DARK_OAK_DOOR:
                 chest.setStack(!chest.stack());
-                editorInterface.setItem(15, Utilities.ConstructItemStack(Material.DARK_OAK_DOOR_ITEM, 1, 0, "§e§lStack Unstackables", "§e<< " + (chest.stack() ? "§a" : "§c") + chest.stack() + " §e>>", "§7If enabled, unstackable items that are", "§7deposited will be stacked up to 64.", "", "§f§l[ Click to Toggle ]"));
+                editorInterface.setItem(15, Utilities.ConstructItemStack(Material.DARK_OAK_DOOR, 1, 0, "Â§eÂ§lStack Unstackables", "Â§e<< " + (chest.stack() ? "Â§a" : "Â§c") + chest.stack() + " Â§e>>", "Â§7If enabled, unstackable items that are", "Â§7deposited will be stacked up to 64.", "", "Â§fÂ§l[ Click to Toggle ]"));
                 break;
             case NETHER_STAR: // particle
                 break;
             case EMERALD_BLOCK:
             case REDSTONE_BLOCK:
                 chest.setEnabled(!chest.isEnabled());
-                editorInterface.setItem(8, Utilities.ConstructItemStack(chest.isEnabled() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK, 1, 0, "§d§lEnabled?", "§e<< §f" + (chest.isEnabled() ? "§aEnabled!" : "§cDisabled.") + " §e>>", "", "§f§l[ Click to Toggle ]"));
+                editorInterface.setItem(8, Utilities.ConstructItemStack(chest.isEnabled() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK, 1, 0, "Â§dÂ§lEnabled?", "Â§e<< Â§f" + (chest.isEnabled() ? "Â§aEnabled!" : "Â§cDisabled.") + " Â§e>>", "", "Â§fÂ§l[ Click to Toggle ]"));
                 break;
                 default:
                     break;
             }
             break;
-        case "§5Region Type":
+        case "Â§5Region Type":
             e.setCancelled(true);
             boolean right = e.getClick() == ClickType.RIGHT;
             switch (e.getCurrentItem().getType()) {
@@ -230,10 +230,10 @@ public class ChestEditor {
                     ench(e.getCurrentItem());
                     top.getItem(1).removeEnchantment(Enchantment.ARROW_DAMAGE);
                     p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.6F, 1.4F);
-                    p.sendMessage(PartyRoom.PREFIX + "§fBalloons will now drop in a §e" + chest.getRadius() + "-block Radius§f!");
+                    p.sendMessage(PartyRoom.PREFIX + "Â§fBalloons will now drop in a Â§e" + chest.getRadius() + "-block RadiusÂ§f!");
                 }
                 break;
-            case STAINED_GLASS_PANE: // region
+            case RED_STAINED_GLASS_PANE: // region
                 if (right) {
                     openAnvil(p, "Enter region name");
                     addPlayerEditor(p, this);
@@ -241,40 +241,40 @@ public class ChestEditor {
                 } else {
                     if (chest.getRegion() == null) {
                         p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.4F);
-                        p.sendMessage(PartyRoom.PREFIX + "§fPlease specify a Region first by Right Clicking the icon.");
+                        p.sendMessage(PartyRoom.PREFIX + "Â§fPlease specify a Region first by Right Clicking the icon.");
                         return;
                     }
                     chest.setRegionTarget(RegionTarget.REGION);
                     ench(e.getCurrentItem());
                     top.getItem(0).removeEnchantment(Enchantment.ARROW_DAMAGE);
                     p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.6F, 1.4F);
-                    p.sendMessage(PartyRoom.PREFIX + "§fBalloons will now drop in the §e" + chest.getRegion() + " Region§f!");
+                    p.sendMessage(PartyRoom.PREFIX + "Â§fBalloons will now drop in the Â§e" + chest.getRegion() + " RegionÂ§f!");
                 }
                 break;
-            case BED:
+            case RED_BED:
                 openInventory(p);
                 break;
                 default:
                     break;
             }
             break;
-        case "§5Drop Height":
+        case "Â§5Drop Height":
             e.setCancelled(true);
             
             switch (e.getCurrentItem().getType()) {
             case MAGMA_CREAM:
             case ENDER_PEARL:
             case SLIME_BALL:
-            case EYE_OF_ENDER:
+            case ENDER_EYE:
                 top.getItem(chest.getYTarget().i()).removeEnchantment(Enchantment.ARROW_DAMAGE);
                 
                 YSpawnTarget selected = YSpawnTarget.get(e.getRawSlot());
                 chest.setYTarget(selected);
                 ench(e.getCurrentItem());
                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.6F, 1.4F);
-                p.sendMessage(PartyRoom.PREFIX + "§fBalloons will now drop at §e" + selected.toString() + " Height Levels§f!");
+                p.sendMessage(PartyRoom.PREFIX + "Â§fBalloons will now drop at Â§e" + selected.toString() + " Height LevelsÂ§f!");
                 break;
-            case BED:
+            case RED_BED:
                 openInventory(p);
                 break;
                 default:
@@ -285,28 +285,28 @@ public class ChestEditor {
     }
     
     private void openRegionInterface(Player p) {
-        Inventory inv = Bukkit.createInventory(null, 9, "§5Region Type");
-        ItemStack compass = Utilities.ConstructItemStack(Material.COMPASS, 1, 0, "§a§lRadius", "§e<< §f" + chest.getRadius() + " blocks §e>>", "", "§f§l[ Left Click to Select Mode ]", "§f§l[ Right Click to Specify Radius ]"),
-                pane =  Utilities.ConstructItemStack(Material.STAINED_GLASS_PANE, 1, 4, "§a§lWorldGuard Region", "§e<< §f" + (chest.getRegion() == null || chest.getRegion() == "" ? "§oNone Set" : chest.getRegion())  + " §e>>", "", "§f§l[ Left Click to Select Mode ]", "§f§l[ Right Click to Specify Region ]");
+        Inventory inv = Bukkit.createInventory(null, 9, "Â§5Region Type");
+        ItemStack compass = Utilities.ConstructItemStack(Material.COMPASS, 1, 0, "Â§aÂ§lRadius", "Â§e<< Â§f" + chest.getRadius() + " blocks Â§e>>", "", "Â§fÂ§l[ Left Click to Select Mode ]", "Â§fÂ§l[ Right Click to Specify Radius ]"),
+                pane =  Utilities.ConstructItemStack(Material.RED_STAINED_GLASS_PANE, 1, 4, "Â§aÂ§lWorldGuard Region", "Â§e<< Â§f" + (chest.getRegion() == null || chest.getRegion() == "" ? "Â§oNone Set" : chest.getRegion())  + " Â§e>>", "", "Â§fÂ§l[ Left Click to Select Mode ]", "Â§fÂ§l[ Right Click to Specify Region ]");
 
         ench(chest.getRegionTarget() == RegionTarget.REGION ? pane : compass);
         
         inv.setItem(0, compass);
         inv.setItem(1, pane);
-        inv.setItem(8, Utilities.ConstructItemStack(Material.BED, 1, 0, "§c§lBack"));
+        inv.setItem(8, Utilities.ConstructItemStack(Material.RED_BED, 1, 0, "Â§cÂ§lBack"));
         
         p.openInventory(inv);
         addPlayerEditor(p, this);
     }
     
     private void openHeightInterface(Player p) {
-        Inventory inv = Bukkit.createInventory(null, 9, "§5Drop Height");
+        Inventory inv = Bukkit.createInventory(null, 9, "Â§5Drop Height");
 
         for (YSpawnTarget y : YSpawnTarget.values()) {
             inv.setItem(y.i(), y.getIcon(chest));
         }
         
-        inv.setItem(8, Utilities.ConstructItemStack(Material.BED, 1, 0, "§c§lBack"));
+        inv.setItem(8, Utilities.ConstructItemStack(Material.RED_BED, 1, 0, "Â§cÂ§lBack"));
         
         p.openInventory(inv);
         addPlayerEditor(p, this);
@@ -326,15 +326,15 @@ public class ChestEditor {
                             try {
                                 String s = e.getName();
                                 if (PartyRoom.getPlugin().handler.getByName(s) != null) {
-                                    p.sendMessage(PartyRoom.PREFIX + "§cThere is already a chest with that name!");
+                                    p.sendMessage(PartyRoom.PREFIX + "Â§cThere is already a chest with that name!");
                                     p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                                     return;
                                 }
                                 chest.setName(s);
-                                p.sendMessage(PartyRoom.PREFIX + "§eParty Chest name §fset to: §e" + s + "§f!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§eParty Chest name Â§fset to: Â§e" + s + "Â§f!");
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid string specified!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid string specified!");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -344,10 +344,10 @@ public class ChestEditor {
                             try {
                                 String[] s = e.getName().split(":");
                                 chest.setMaterial(Material.valueOf(s[0].toUpperCase().replace(" ", "_")), s.length > 1 ? Integer.parseInt(s[1]) : 0);
-                                p.sendMessage(PartyRoom.PREFIX + "§eParty Balloon Block §fset to: §e" + s[0] + "§f!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§eParty Balloon Block Â§fset to: Â§e" + s[0] + "Â§f!");
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid block type specified! §f(BlockType:Data)");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid block type specified! Â§f(BlockType:Data)");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -358,10 +358,10 @@ public class ChestEditor {
                                 String s = e.getName();
                                 chest.setCost(s);
                                 
-                                p.sendMessage(PartyRoom.PREFIX + "§fStarting a Drop Party now costs: §e$" + s + "§f!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§fStarting a Drop Party now costs: Â§e$" + s + "Â§f!");
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid lever-pull cost specified!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid lever-pull cost specified!");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -372,19 +372,19 @@ public class ChestEditor {
                                 int amt = Integer.parseInt(e.getName());
                                 
                                 if (amt < 1) {
-                                    p.sendMessage(PartyRoom.PREFIX + "§cWhy would you want less than one balloon per party? That's just sad.");
+                                    p.sendMessage(PartyRoom.PREFIX + "Â§cWhy would you want less than one balloon per party? That's just sad.");
                                     p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                                     return;
                                 }
                                 if (amt > 100) {
-                                    p.sendMessage(PartyRoom.PREFIX + "§cWARNING: §fYou've specified a large number of balloons. This may cause issues!");
+                                    p.sendMessage(PartyRoom.PREFIX + "Â§cWARNING: Â§fYou've specified a large number of balloons. This may cause issues!");
                                 }
                                 
                                 chest.setCount(amt);
-                                p.sendMessage(PartyRoom.PREFIX + "§e" + amt + "§f balloons will now drop with each party!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§e" + amt + "Â§f balloons will now drop with each party!");
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid balloon count specified! §fPlease use whole numbers.");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid balloon count specified! Â§fPlease use whole numbers.");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -393,14 +393,14 @@ public class ChestEditor {
                         if (e.getName() != null) {
                             try {
                                 if (!chest.setWGRegion(e.getName())) {
-                                    p.sendMessage(PartyRoom.PREFIX + "§cThe specified region: §e" + e.getName() + " §cdoes not exist in your current world.");
+                                    p.sendMessage(PartyRoom.PREFIX + "Â§cThe specified region: Â§e" + e.getName() + " Â§cdoes not exist in your current world.");
                                     p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                                     return;
                                 }
-                                p.sendMessage(PartyRoom.PREFIX + "§eParty Room Region §fset to: §e" + e.getName() + "§f!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§eParty Room Region Â§fset to: Â§e" + e.getName() + "Â§f!");
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cThe specified region: §e" + e.getName() + " §cdoes not exist in your current world.");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cThe specified region: Â§e" + e.getName() + " Â§cdoes not exist in your current world.");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -409,10 +409,10 @@ public class ChestEditor {
                         if (e.getName() != null) {
                             try {
                                 chest.setRadius(Integer.parseInt(e.getName()));
-                                p.sendMessage(PartyRoom.PREFIX + "§eParty Room Radius §fset to: §e" + e.getName() + " blocks§f!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§eParty Room Radius Â§fset to: Â§e" + e.getName() + " blocksÂ§f!");
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid balloon drop radius specified! §fPlease use whole numbers.");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid balloon drop radius specified! Â§fPlease use whole numbers.");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -421,10 +421,10 @@ public class ChestEditor {
                         if (e.getName() != null) {
                             try {
                                 chest.setAnnounceInterval(Integer.parseInt(e.getName()));
-                                p.sendMessage(PartyRoom.PREFIX + "§eParty Room Announcement Interval §fset to: §e" + e.getName() + " seconds§f!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§eParty Room Announcement Interval Â§fset to: Â§e" + e.getName() + " secondsÂ§f!");
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid Announcement Interval specified! §fPlease use whole numbers.");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid Announcement Interval specified! Â§fPlease use whole numbers.");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -433,10 +433,10 @@ public class ChestEditor {
                         if (e.getName() != null) {
                             try {
                                 chest.setDropCooldown(Integer.parseInt(e.getName()));
-                                p.sendMessage(PartyRoom.PREFIX + "§eParty Room Drop Party Cooldown §fset to: §e" + e.getName() + " seconds§f!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§eParty Room Drop Party Cooldown Â§fset to: Â§e" + e.getName() + " secondsÂ§f!");
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid Drop Party Cooldown specified! §fPlease use whole numbers.");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid Drop Party Cooldown specified! Â§fPlease use whole numbers.");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -445,11 +445,11 @@ public class ChestEditor {
                         if (e.getName() != null) {
                             try {
                                 chest.setAnnounceMessage(e.getName());
-                                p.sendMessage(PartyRoom.PREFIX + "§eParty Room announcement message set to:");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§eParty Room announcement message set to:");
                                 p.sendMessage(PartyRoom.PREFIX + chest.getAnnounceMessage());
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid string specified!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid string specified!");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -458,10 +458,10 @@ public class ChestEditor {
                         if (e.getName() != null) {
                             try {
                                 chest.setMinSlots(Integer.parseInt(e.getName()));
-                                p.sendMessage(PartyRoom.PREFIX + "§eMinimum Slots required to start Drop Party §fset to: §e" + e.getName() + "§f!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§eMinimum Slots required to start Drop Party Â§fset to: Â§e" + e.getName() + "Â§f!");
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid value specified! §fPlease use whole numbers.");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid value specified! Â§fPlease use whole numbers.");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -470,10 +470,10 @@ public class ChestEditor {
                         if (e.getName() != null) {
                             try {
                                 chest.setDropDelay(Integer.parseInt(e.getName()));
-                                p.sendMessage(PartyRoom.PREFIX + "§eParty Room Drop Delay §fset to: §e" + e.getName() + " seconds§f!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§eParty Room Drop Delay Â§fset to: Â§e" + e.getName() + " secondsÂ§f!");
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid Drop Delay specified! §fPlease use whole numbers.");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid Drop Delay specified! Â§fPlease use whole numbers.");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }
@@ -482,11 +482,11 @@ public class ChestEditor {
                         if (e.getName() != null) {
                             try {
                                 chest.setStartMessage(e.getName());
-                                p.sendMessage(PartyRoom.PREFIX + "§eParty Room start message set to:");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§eParty Room start message set to:");
                                 p.sendMessage(PartyRoom.PREFIX + chest.getStartMessage());
                                 p.playSound(p.getLocation(), Sounds.BLOCK_NOTE_PLING.a(), 0.8F, 1.8F);
                             } catch (Exception ex) {
-                                p.sendMessage(PartyRoom.PREFIX + "§cInvalid string specified!");
+                                p.sendMessage(PartyRoom.PREFIX + "Â§cInvalid string specified!");
                                 p.playSound(p.getLocation(), Sounds.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.a(), 0.4F, 1.2F);
                             }
                         }

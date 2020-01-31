@@ -1,12 +1,12 @@
 package partyroom.listener;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
@@ -24,15 +24,15 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
+import org.bukkit.material.Lever;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import partyroom.ConfigMessages.ConfigMessage;
 import partyroom.OwnedItemStack;
 import partyroom.PartyChest;
 import partyroom.PartyRoom;
 import partyroom.Utilities;
-import partyroom.ConfigMessages.ConfigMessage;
 import partyroom.gui.ChestEditor;
 import partyroom.versions.SoundHandler.Sounds;
 
@@ -65,10 +65,13 @@ public class PartyListener implements Listener {
                 
                 PartyChest Pchest = PartyRoom.getPlugin().handler.getPartyChest(e.getClickedBlock().getMetadata("partyroom").get(0).asString());
                 
+                Location loc = e.getClickedBlock().getLocation().add(0.5, 0.5, 0.5);
                 e.getPlayer().getNearbyEntities(64, 64, 64).forEach(en -> {
                 	if (en instanceof Player)
-                		((Player) en).spawnParticle(Particle.EXPLOSION_LARGE, e.getClickedBlock().getLocation(), 1);
+                		((Player) en).spawnParticle(Particle.EXPLOSION_LARGE, loc, 1);
                 });
+        		e.getPlayer().spawnParticle(Particle.EXPLOSION_LARGE, loc, 1);
+        		
                 e.getPlayer().playSound(e.getClickedBlock().getLocation(), Sounds.ENTITY_CHICKEN_EGG.a(), 0.8F, 0.5F);
                 
                 ItemStack loot = Pchest.getRandomLoot();
@@ -92,13 +95,13 @@ public class PartyListener implements Listener {
                         return;
                     }
                     
+                    Switch sw = (Switch) lever.getBlockData().clone();
                     if (chest.attemptPull(p)) {
-
-                        final BlockData prevposition = lever.getState().getBlockData().clone();
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-                                lever.getState().setBlockData(prevposition);
+                                sw.setPowered(false);
+                                lever.setBlockData(sw);
                             }
                         }.runTaskLater(PartyRoom.getPlugin(), 40L);
                         

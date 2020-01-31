@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>random</groupId>
   <artifactId>PartyRoom</artifactId>
-  <version>3.41</version>
+  <version>3.51</version>
      <pluginRepositories>
        <pluginRepository>
            <id>bukkit-repo</id>
@@ -12,22 +12,22 @@
       <dependencies>
        <dependency>
            <groupId>org.bukkit</groupId>
-           <artifactId>spigot</artifactId>
-           <version>1.12.2</version>
+           <artifactId>paper</artifactId>
+           <version>1.15.1</version>
            <type>jar</type>
            <scope>provided</scope>
        </dependency>
        <dependency>
            <groupId>reference</groupId>
            <artifactId>WorldGuard</artifactId>
-           <version>1.8</version>
+           <version>1.15</version>
            <type>jar</type>
            <scope>provided</scope>
        </dependency>
        <dependency>
            <groupId>reference</groupId>
            <artifactId>WorldEdit</artifactId>
-           <version>1.8</version>
+           <version>1.15</version>
            <type>jar</type>
            <scope>provided</scope>
        </dependency>

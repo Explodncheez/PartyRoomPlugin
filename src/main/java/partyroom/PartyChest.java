@@ -9,6 +9,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.FallingBlock;
@@ -21,10 +22,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.BlockVector;
 
-import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 
 import partyroom.ConfigMessages.ConfigMessage;
 import partyroom.gui.ChestEditor;
@@ -149,7 +155,17 @@ public class PartyChest {
         setMaterial(blockType, blockData);
         
         if (region != null && !region.equals("''")) {
-            ProtectedRegion PRegion = PartyRoom.getWG() == null ? null : PartyRoom.getWG().getRegionManager(block.getWorld()).getRegion(region);
+        	ProtectedRegion PRegion = null;
+        	
+        	if (PartyRoom.getWG() != null) {
+            	
+            	PRegion = getRegionFor(block.getWorld(), region);
+            	
+            	if (PRegion == null) {
+                    Utilities.throwConsoleError("The specified region §c" + region + " §rdoes not exist!");
+            	}
+        	}
+        	
             if (PRegion instanceof ProtectedCuboidRegion) {
                 this.regionName = region;
             } else {
@@ -161,6 +177,15 @@ public class PartyChest {
         this.fill = new HashMap<>();
         
         PartyRoom.getPlugin().handler.addPartyChest(this);
+    }
+    
+    private static ProtectedRegion getRegionFor(World world, String regionName) {
+    	if (PartyRoom.getWG() == null)
+    		return null;
+
+    	RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+    	RegionManager regions = container.get(BukkitAdapter.adapt(world));
+    	return regions.getRegion(regionName);
     }
     
     @Override
@@ -324,7 +349,7 @@ public class PartyChest {
     }
     
     public boolean setWGRegion(String s) {
-        ProtectedRegion region = PartyRoom.getWG().getRegionManager(Utilities.StringToLoc(chestLocation).getWorld()).getRegion(s);
+        ProtectedRegion region = getRegionFor(Utilities.StringToLoc(chestLocation).getWorld(), s);
         if (region != null && region instanceof ProtectedCuboidRegion) {
             regionName = s;
             return true;
@@ -333,7 +358,7 @@ public class PartyChest {
     }
     
     public ProtectedCuboidRegion getWGRegion() {
-        return (ProtectedCuboidRegion) PartyRoom.getWG().getRegionManager(Utilities.StringToLoc(chestLocation).getWorld()).getRegion(regionName);
+        return (ProtectedCuboidRegion) getRegionFor(Utilities.StringToLoc(chestLocation).getWorld(), regionName);
     }
     
     public String getMaterial() {
@@ -391,8 +416,8 @@ public class PartyChest {
                     return null;
                 }
                 
-                BlockVector vMax = region.getMaximumPoint();
-                BlockVector vMin = region.getMinimumPoint();
+                BlockVector3 vMax = region.getMaximumPoint();
+                BlockVector3 vMin = region.getMinimumPoint();
                 return new PartyRoomRegion(chest.getWorld(), vMin.getBlockX(), vMin.getBlockY(), vMin.getBlockZ(), vMax.getBlockX(), vMax.getBlockY(), vMax.getBlockZ());
             default:
                 Location c = chest.getLocation();

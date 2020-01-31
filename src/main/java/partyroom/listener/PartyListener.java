@@ -3,8 +3,10 @@ package partyroom.listener;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
@@ -22,6 +24,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -61,7 +64,11 @@ public class PartyListener implements Listener {
                 e.setCancelled(true);
                 
                 PartyChest Pchest = PartyRoom.getPlugin().handler.getPartyChest(e.getClickedBlock().getMetadata("partyroom").get(0).asString());
-                e.getClickedBlock().getWorld().playEffect(e.getClickedBlock().getLocation().add(0.5, 0.5, 0.5), PartyRoom.isSpigot() ? Effect.WITHER_BREAK_BLOCK : Effect.SMOKE, 0);
+                
+                e.getPlayer().getNearbyEntities(64, 64, 64).forEach(en -> {
+                	if (en instanceof Player)
+                		((Player) en).spawnParticle(Particle.EXPLOSION_LARGE, e.getClickedBlock().getLocation(), 1);
+                });
                 e.getPlayer().playSound(e.getClickedBlock().getLocation(), Sounds.ENTITY_CHICKEN_EGG.a(), 0.8F, 0.5F);
                 
                 ItemStack loot = Pchest.getRandomLoot();
@@ -86,12 +93,12 @@ public class PartyListener implements Listener {
                     }
                     
                     if (chest.attemptPull(p)) {
-                        
-                        final byte b = lever.getData();
+
+                        final BlockData prevposition = lever.getState().getBlockData().clone();
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-                                lever.setType(Material.LEVER);
+                                lever.getState().setBlockData(prevposition);
                             }
                         }.runTaskLater(PartyRoom.getPlugin(), 40L);
                         

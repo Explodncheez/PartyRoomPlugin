@@ -20,6 +20,9 @@ public abstract class AnvilGUI {
 
     static {
         switch (PartyRoom.VERSION) {
+        case "v1_15_R1":
+            clazz = AnvilGUI_v1_15_R1.class;
+            break;
         case "v1_12_R1":
             clazz = AnvilGUI_v1_12_R1.class;
             break;

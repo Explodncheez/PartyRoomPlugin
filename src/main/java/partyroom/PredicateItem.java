@@ -52,10 +52,9 @@ public class PredicateItem {
         return false;
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public int hashCode() {
-        int hash = mat.getId() * 19 + 7;
+        int hash = mat.toString().hashCode() * 19 + 7;
         hash += data * 7 + 3;
         return hash;
     }
